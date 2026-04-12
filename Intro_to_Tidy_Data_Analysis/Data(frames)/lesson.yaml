@@ -8,3 +8,114 @@
 
 - Class: text
   Output: Welcome to this first lesson on (tidy) data analysis!
+
+- Class: text
+  Output: Before learning everything about analyzing data, we need to know what data is and how it is structured and organized.
+
+- Class: text
+  Output: In this lesson, we'll be working with a real dataset that comes built-in with R. It is a dataset about penguins, collected and made available by Dr. Kristen Gorman and the Palmer Station, Antarctica LTER, a member of the Long Term Ecological Research Network.
+
+- Class: text
+  Output: Because this dataset comes built-in with R, we don't have to worry about downloading anything or reading a dataset into R.
+
+- Class: cmd_question
+  Output: For now, you can access the dataset by typing its name -- penguins -- into the console. Do so now
+  AnswerTests: expr_identical_to('penguins')
+  Hint: Type penguins and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: This prints (some of) the dataset back to the console, so that you can see its contents. If you scroll up in the console, you can get some sense of the structure of the data.
+
+- Class: text
+  Output: This is a DATAFRAME; a table-like data structure, with rows (horizontal) and columns (vertical).
+
+- Class: text
+  Output: Ideally (in a _tidy_ dataframe) each row is one OBSERVATION -- one entity that we are interest in. In this dataframe, each row is one penguin.
+
+- Class: text
+  Output: We also call that the UNIT OF OBSERVATION -- the level at which data is collected or measured.
+
+- Class: mult_question
+  Output: What is the UNIT OF OBSERVATION in this dataset?
+  AnswerChoices: Individual penguins;Individual species of penguins;Individual islands;Individual research stations
+  CorrectAnswer: Individual penguins
+  AnswerTests: omnitest(correctVal='Individual penguins')
+  Hint: Each row represents a single penguin.
+
+- Class: cmd_question
+  Output: We can get the number of rows from a dataframe with the nrow(<name_of_dataframe>) function. Try it out.
+  CorrectAnswer: nrow(penguins)
+  AnswerTests: expr_identical_to('nrow(penguins)')
+  Hint: Use nrow(penguins) to see the number of rows in the dataset
+
+- Class: text
+  Output: " "
+
+- Class: exact_question
+  Output: How many observations (penguins) are in this dataset?
+  CorrectAnswer: nrow(penguins)
+  AnswerTests: omnitest(correctVal = nrow(penguins))
+  Hint: Use nrow(penguins) to see the number of observations in the dataset.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: For each of these observations, the dataframe contains several bits of information. These are the columns of the dataframe.
+
+- Class: cmd_question
+  Output: Just like counting the number of rows, we can use the ncol() function to get the number of columns. Try it out.
+  CorrectAnswer: ncol(penguins)
+  AnswerTests: expr_identical_to('ncol(penguins)')
+  Hint: Use ncol(penguins) to see the number of columns in the dataset
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: Each column is a (DATA) VARIABLE; a characteristic or attribute that is measured or recorded for each observation. The important point structure of a dataframe is that it has the same variables for each observation.
+
+- Class: cmd_question
+  Output: More informative than the number of columns, is the actual names of these variables. Use the colnames() function to get the names of the variables in the dataset.
+  CorrectAnswer: colnames(penguins)
+  AnswerTests: expr_identical_to('colnames(penguins)')
+  Hint: Use colnames(penguins) to get the names of the variables in the dataset.
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: Which is NOT a variable in the penguins dataset?
+  AnswerChoices: species;name;bill_length;body_mass;flipper_length
+  CorrectAnswer: name
+  AnswerTests: omnitest(correctVal='name')
+  Hint: Look at the column names to see which variables are (not) included in the dataset.
+
+- Class: text
+  Output: ANY dataset, regardless of formatting and organization, consists of these two basic components; observations (at some unit of observation), and variables. If these are organized in a variables-as-columns, observations-as-rows format, then you have a dataframe!
+
+- Class: cmd_question
+  Output: To doublecheck that R also knows that this is a dataframe, we can check the class of the penguins variable with the class(...) function. Try this now.
+  CorrectAnswer: class(penguins)
+  AnswerTests: expr_identical_to('class(penguins)')
+  Hint: Use class(penguins) to check the class of the penguins dataset.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: And to quickly get a combined overview of the size of a dataframe, use the dim(...) function. Try it out now and see if you can identify what it tells you about a dataframe.
+  CorrectAnswer: dim(penguins)
+  AnswerTests: expr_identical_to('dim(penguins)')
+
+- Class: text
+  Output: " "
+
+- Class: text_question
+  Output: Write a 2 sentence description of the DATA. How would you describe the data to someone else based on the information you have so far? How many penguins are in the dataset? What information do you have on each penguin? Try to *not* use (only) the names of the variables as your description, but instead focus on what kind of information they might represent.
+  CorrectAnswer: This dataset contains information on 344 individual penguins. For each penguin, we have information on its species, the island it lives on, and 6 measurements of its body and bill.
+  AnswerTests: TRUE
+
