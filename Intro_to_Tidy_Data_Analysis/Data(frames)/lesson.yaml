@@ -1,0 +1,10 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Data(frames)
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: Welcome to this first lesson on (tidy) data analysis!
