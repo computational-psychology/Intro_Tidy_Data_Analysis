@@ -1,0 +1,107 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Summarising Data
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: In the previous lessons you got to know the penguins dataset -- what it contains, how it is structured, and what values appear in each variable. Now we can start answering actual data questions.
+
+- Class: text
+  Output: "In the previous lesson you saw that for DISCRETE variables -- with few distinct values, like species -- we can get a great overview of the SCOPE of the dataset (for that variable). But, for CONTINUOUS variables -- mainly numeric variables like body mass -- there are too many distinct values to get a useful overview."
+
+- Class: text
+  Output: "For continuous variables, we instead want to SUMMARISE the data: collapse an entire variable into one or a few numbers that capture something meaningful -- like the largest value, the smallest value, or a typical value. This is called AGGREGATION or SUMMARISATION."
+
+- Class: text
+  Output: "Aggregation is an example of a DATA OPERATION: a transformation that changes the structure or representation of a dataset. Some data operations you will encounter in data analysis: AGGREGATION (collapsing many values into one), GROUPED AGGREGATION (doing so separately per group), FILTERING (keeping only observations that meet some condition), MUTATING (adding or transforming variables), and more. In this lesson we focus on aggregation."
+
+- Class: cmd_question
+  Output: "Let's start with a simple question: what is the heaviest penguin in the dataset? The tidyverse function for this is summarise(). It takes a dataframe and a SUMMARY EXPRESSION, and returns a new dataframe with one observation: the result of that summary. The function max() returns the maximum value of a variable. So we want: summarise(penguins, max(body_mass)). Try running that now.
+  CorrectAnswer: summarise(penguins, max(body_mass))
+  AnswerTests: expr_identical_to('summarise(penguins, max(body_mass))')
+  Hint: Type summarise(penguins, max(body_mass)) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: What is in the result?
+  AnswerChoices: NA, not a number;The average body mass in grams;An error message;A list of all body masses
+  CorrectAnswer: NA, not a number
+  AnswerTests: omnitest(correctVal='NA, not a number')
+  Hint: Look at the value in the output carefully.
+
+- Class: text
+  Output: "You saw in the previous lesson that some observations have NA for some variables -- no value was recorded. NA is contagious in R: any calculation that includes an NA will itself return NA. max() follows the same rule -- because it cannot know what the missing values are, it cannot be certain what the true maximum is."
+
+- Class: text
+  Output: 
+
+- Class: cmd_question
+  Output: "To fix this, we can tell max() to ignore NA values before calculating. The argument na.rm = TRUE does this -- na.rm stands for NA remove. Run the summarise() call to get the maximum body mass, ignoring missing values."
+  CorrectAnswer: summarise(penguins, max(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(penguins, max(body_mass, na.rm = TRUE))')
+  Hint: Type summarise(penguins, max(body_mass, na.rm = TRUE)) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "That gives a number! The maximum body mass in the dataset (excluding the observations with missing values)."
+
+- Class: cmd_question
+  Output: "Notice the output variable is named max(body_mass, na.rm = TRUE) -- the full expression. While that is very descriptive of what we *did*, it's not very user-friendly on what this *means*. We can give it a cleaner name by using name = expression syntax inside summarise(). Run summarise(penguins, max_body_mass = max(body_mass, na.rm = TRUE))"
+  CorrectAnswer: summarise(penguins, max_body_mass = max(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(penguins, max_body_mass = max(body_mass, na.rm = TRUE))')
+  Hint: Type summarise(penguins, max_body_mass = max(body_mass, na.rm = TRUE)) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  OUtput: "Now the output variable is named max_body_mass -- much easier to read and work with. You can choose any name you like for the output variable -- just make sure it is a valid R variable name (no spaces, starts with a letter, etc.)."
+
+- Class: text
+  Output: "Any function that takes a variable and returns a single value can be used inside summarise(): max(), min(), mean(), sd() (standard deviation), and many others. You will need na.rm = TRUE for all of them. Let's try a few more."
+
+- Class: cmd_question
+  Output: Use summarise() to find the minimum body mass. Name the output variable min_body_mass.
+  CorrectAnswer: summarise(penguins, min_body_mass = min(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(penguins, min_body_mass = min(body_mass, na.rm = TRUE))')
+  Hint: Try summarise(penguins, min_body_mass = min(body_mass, na.rm = TRUE))
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "So the heaviest penguin is 6300 g and the lightest is 2700 g. Now: what is the TYPICAL body mass? For that, we use the arithmetic mean."
+
+- Class: cmd_question
+  Output: Use summarise() to compute the average body mass. Name the output variable avg_body_mass.
+  CorrectAnswer: summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: Try summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "You can also compute multiple summaries in a single summarise() call by separating them with commas: summarise(penguins, avg = mean(body_mass, na.rm = TRUE), sd = sd(body_mass, na.rm = TRUE))"
+
+- Class: cmd_question
+  Output: "Use summarise() to compute both the mean and the standard deviation of body_mass in one call. Name them avg_body_mass and sd_body_mass."
+  CorrectAnswer: summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))')
+  Hint: "Try summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Now you have a good overview of the range and typical value of body mass in the dataset. You can use the same approach to summarise any other variable -- just replace body_mass with the variable you want to summarise, and make sure to include na.rm = TRUE if it has missing values."
+
+- Class: text
+  Output: "In this lesson you learned how to aggregate (parts of) a dataframe into fewer values, such as a max, mean or standard deviation. You also learned how to handle missing values with na.rm = TRUE, how to name output variables, and how to compute multiple summaries in one call. These are some very useful steps for answering basic data questions. In the next lesson, you will learn how to answer some more complicated questions that rely on aggregating different combinations of variables and/or different groups of observations."
