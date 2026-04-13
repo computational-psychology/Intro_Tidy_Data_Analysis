@@ -119,3 +119,9 @@
   CorrectAnswer: This dataset contains information on 344 individual penguins. For each penguin, we have information on its species, the island it lives on, and 6 measurements of its body and bill.
   AnswerTests: TRUE
 
+
+- Class: text
+  Output: "Here is one way to describe it: This dataset contains information on 344 individual penguins. For each penguin, we have information on its species, the island it lives on, and six measurements of its body and bill -- including bill length and depth, flipper length, and body mass."
+
+- Class: text
+  Output: "In this lesson you explored the basic structure of a dataframe: what observations and variables are, how many of each there are, and what the variables are named. Understanding this structure of a dataset is crucial for being able to access the information (data) in it, and be able to analyze it. In the next lesson, we'll learn how to access specific pieces of information in a dataframe."
