@@ -1,0 +1,245 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Exploring Content
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: "In the previous lesson, you learned what a dataframe is, and how it is structured: observations (individual penguins) are rows and variables (characteristics of those penguins) are columns. You also learned how to find out how many observations and variables there are, and what the variable names are."
+
+- Class: text
+  Output: In this lesson we will look more closely at the actual *content* of the penguins dataframe -- what type of data is in each variable, and what specific values appear in this dataset.
+
+- Class: text
+  Output: To work more easily with dataframes, we will use the tidyverse -- a collection of R packages that are designed to work together for data science. The tidyverse includes packages for reading data, manipulating it, summarising it, and visualising it. It is a powerful and consistent set of tools that will make your data analysis much easier.
+
+- Class: cmd_question
+  Output: Because the tidyverse is a separate (set of) package not built-in to R, we need to install it first and then load it into R. I'm assuming that you've already installed the tidyverse. So, now you need to load it. You (only) need to do this once per R session. The function for loading any package is library(). Load the tidyverse now.
+  CorrectAnswer: library(tidyverse)
+  AnswerTests: expr_identical_to('library(tidyverse)')
+  Hint: Type library(tidyverse) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: You may see a message listing which packages were loaded and any conflicts with base R functions -- that is normal. Now we have access to all the tidyverse functions we will need.
+
+- Class: text
+  Output: Now let's look at what is actually *in* those rows of our dataframe. We'll use a few functions that let you peek at actual rows of data, then inspect the type of data of each variable, and finally explore some of the values that appear in some columns.
+
+- Class: cmd_question
+  Output: Try running slice_head(penguins). Have a look at the output -- what year does this observation come from?
+  CorrectAnswer: slice_head(penguins)
+  AnswerTests: expr_identical_to('slice_head(penguins)')
+  Hint: Type slice_head(penguins) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "slice_head() shows the first observation by default -- just one. But we can ask for more. When you want to know what arguments a function accepts, the best place to look is the built-in help. You can open the help page for any function by typing a question mark followed by the function name: ?function_name"
+
+- Class: cmd_question
+  Output: Open the help page for slice_head.
+  CorrectAnswer: ?slice_head
+  AnswerTests: expr_identical_to('?slice_head')
+  Hint: Type ?slice_head and hit enter.
+
+- Class: text
+  Output: "This should open the help page for slice_head, in a side panel (usually on the right). The help page shows you all the arguments the function accepts. You should see an argument called `n`, which controls how many observations are returned. By default it is 1. Let's ask for more to get a better look."
+
+- Class: cmd_question
+  Output: Run slice_head(penguins, n = 5) to see the first 5 observations. Note the year values you see.
+  CorrectAnswer: slice_head(penguins, n = 5)
+  AnswerTests: expr_identical_to('slice_head(penguins, n = 5)')
+  Hint: Type slice_head(penguins, n = 5) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "With a few observations visible it is easier to get a real impression of the data -- you can start to see differences between penguins, and spot any unusual or missing values."
+
+- Class: cmd_question
+  Output: Now try slice_tail(penguins, n = 5). What year do these observations come from -- is it the same as in slice_head()?
+  CorrectAnswer: slice_tail(penguins, n = 5)
+  AnswerTests: expr_identical_to('slice_tail(penguins, n = 5)')
+  Hint: Type slice_tail(penguins, n = 5) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "slice_tail() shows the last observations in the dataframe. The year values are likely different -- suggesting the data is ordered chronologically, with older observations at the top and more recent ones at the bottom."
+
+- Class: cmd_question
+  Output: "Now try slice_sample(penguins, n = 5). Note which years appear."
+  CorrectAnswer: slice_sample(penguins, n = 5)
+  AnswerTests: expr_identical_to('slice_sample(penguins, n = 5)')
+  Hint: Type slice_sample(penguins, n = 5) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: Run slice_sample(penguins, n = 5) again. Are the years -- and the penguins -- the same as before?
+  CorrectAnswer: slice_sample(penguins, n = 5)
+  AnswerTests: expr_identical_to('slice_sample(penguins, n = 5)')
+  Hint: Type slice_sample(penguins, n = 5) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "slice_sample() draws a random selection of observations each time -- so you almost certainly saw different penguins, from different years, the second time. Unlike slice_head() and slice_tail(), which always return the same observations, slice_sample() is useful for getting a feel for the variety in the data."
+
+- Class: text
+  Output: These three functions each give you a look at actual observations -- one penguin per row, with all its variables. You may have noticed some NA values in the output; we will come back to those later.
+
+- Class: cmd_question
+  Output: Now try glimpse(penguins). This gives a very different kind of overview -- have a good look at the output before continuing.
+  CorrectAnswer: glimpse(penguins)
+  AnswerTests: expr_identical_to('glimpse(penguins)')
+  Hint: Type glimpse(penguins) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "glimpse() organises the output by variable rather than by observation: each line is one variable, with its name, and a preview of its first values. This lets you see all variables at once, which is not always possible with the slice functions when a dataset has many variables."
+
+- Class: mult_question
+  Output: Look at the preview values for body_mass in the glimpse output. What do the values look like?
+  AnswerChoices: Whole numbers like 3750, 3800, 3250;Decimal numbers like 39.1, 39.5;Short text labels like 'Adelie', 'male';A mix of numbers and text
+  CorrectAnswer: Whole numbers like 3750, 3800, 3250
+  AnswerTests: omnitest(correctVal='Whole numbers like 3750, 3800, 3250')
+  Hint: Find body_mass in the glimpse output and look at the values shown to the right.
+
+- Class: mult_question
+  Output: Now look at the preview values for bill_len. How are those values different from body_mass?
+  AnswerChoices: They are decimal numbers, like 39.1 or 40.3;They are whole numbers, like 3750;They are text labels;They are years
+  CorrectAnswer: They are decimal numbers, like 39.1 or 40.3
+  AnswerTests: omnitest(correctVal='They are decimal numbers, like 39.1 or 40.3')
+  Hint: Find bill_len in the glimpse output and look at the values on the right.
+
+- Class: text
+  Output: "This difference in values reflects the DATA TYPE of each variable. glimpse() shows the type in angle brackets right after the variable name. body_mass and year are shown as <int> -- meaning integers, or whole numbers. bill_len and bill_dep are shown as <dbl> -- meaning doubles, R's name for decimal (real) numbers."
+
+- Class: mult_question
+  Output: Based on what you see in glimpse(), which variable would you expect to be stored as <int>?
+  AnswerChoices: year;bill_len;bill_dep;flipper_len
+  CorrectAnswer: year
+  AnswerTests: omnitest(correctVal='year')
+  Hint: Integers are whole numbers. Which of these variables could only ever be a whole number?
+
+- Class: text
+  Output: "Now look at the variables species, island, and sex in the glimpse output. Their type is shown as <fct>. The values look like text -- 'Adelie', 'Torgersen', 'male' -- but they are not stored as free text. They are stored as a FACTOR: a categorical variable with a fixed, limited set of possible values."
+
+- Class: text
+  Output: "The difference matters: free text can be anything, but a factor can only take values from a predefined set of categories (like 'Adelie', 'Chinstrap', 'Gentoo'). This makes factors easier to work with for grouping, filtering, and plotting. We will use some of the special features of factors more in later lessons."
+
+- Class: mult_question
+  Output: Which of these best describes a factor variable?
+  AnswerChoices: A variable with a fixed set of categories;A variable containing free-form text;A variable containing only numbers;A variable that can contain anything
+  CorrectAnswer: A variable with a fixed set of categories
+  AnswerTests: omnitest(correctVal='A variable with a fixed set of categories')
+  Hint: Think about what distinguishes species or sex from something like a name or a description.
+
+- Class: text
+  Output: So far we know how much data there is and what type each variable is. But we still don't know which specific values appear in the categorical variables. For example; how many different islands are there, and which ones?
+
+- Class: text
+  Output: "The tidyverse function distinct() answers exactly that. It takes a dataframe and a variable name, and returns the unique values in that variable: distinct(dataframe, variable_name)"
+
+- Class: cmd_question
+  Output: Use distinct() to find out which islands appear in the penguins dataset.
+  CorrectAnswer: distinct(penguins, island)
+  AnswerTests: expr_identical_to('distinct(penguins, island)')
+  Hint: Try distinct(penguins, island)
+
+- Class: text
+  Output: " "
+
+
+
+- Class: mult_question
+  Output: How many islands does the data cover?
+  AnswerChoices: 3;2;4;5
+  CorrectAnswer: 3
+  AnswerTests: omnitest(correctVal='3')
+  Hint: Count the distinct values in the output.
+
+- Class: text
+  Output: Three islands -- Biscoe, Dream, and Torgersen. Now let's see which species of penguins were observed.
+
+- Class: cmd_question
+  Output: Use distinct() to find out which species appear in the penguins dataset.
+  CorrectAnswer: distinct(penguins, species)
+  AnswerTests: expr_identical_to('distinct(penguins, species)')
+  Hint: Try distinct(penguins, species)
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: Use distinct() to find out which years the data was collected in.
+  CorrectAnswer: distinct(penguins, year)
+  AnswerTests: expr_identical_to('distinct(penguins, year)')
+  Hint: Try distinct(penguins, year)
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "Before running any code: what distinct values would you expect to find in the sex column?"
+  AnswerChoices: male and female;just male;boy, and girl; none
+  CorrectAnswer: male and female
+  AnswerTests: omnitest(correctVal='male and female')
+  Hint: Think about what values sex can take -- before considering any data quality issues.
+
+- Class: cmd_question
+  Output: Now use distinct() on the sex column. Does the output match your expectation?
+  CorrectAnswer: distinct(penguins, sex)
+  AnswerTests: expr_identical_to('distinct(penguins, sex)')
+  Hint: Try distinct(penguins, sex)
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Alongside male and female, there is a third value: NA. This is R's representation of a MISSING VALUE -- a value that should be there (there is an observation, there is a variable), but for which no actual value was recorded. For some penguins, sex was simply not observed or not recorded."
+
+- Class: text
+  Output: "NA stands for Not Available. It is a special value in R, not a number or a text label. Because we don't know what a missing value actually is, NA is not equal to anything -- not even to another NA. So NA == NA does not return TRUE; it returns NA. Similarly, most calculations involving NA will also return NA by default. This will matter when we start asking questions about the data."
+
+- Class: cmd_question
+  Output: Now try distinct() on a numerical variable with many different values -- body_mass. Think first about what you would expect the output to look like. Use distinct() on the body_mass column of penguins.
+  CorrectAnswer: distinct(penguins, body_mass)
+  AnswerTests: expr_identical_to('distinct(penguins, body_mass)')
+  Hint: Try distinct(penguins, body_mass)
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: As you can see, distinct() on a numeric variable like body_mass produces a lot of output. This is because a numeric variable can take on many distinct values -- in this case, any integer! With this many distinct values, the output is not very informative. distinct() works best for categorical variables or numeric ones with only a few possible values (like year).
+
+- Class: text
+  Output: "Obviously, we'd still like have some idea of the range of values in body_mass -- but distinct() is not the right tool for that. We will learn better ways to summarise numeric variables in the next lesson."
+
+- Class: text
+  Output: "For now you have a solid first picture of this dataset: its size, what each variable contains, its data types, and the scope of the data (which species, islands, and years are represented). Let's put that together."
+
+- Class: text_question
+  Output: "Write a short (2-3 sentence) description of the penguins dataset. Include: what is being measured (unit of observation), how many observations, which variables / what information is recorded, and the scope (which species? which islands? which years?). Try to describe the *content*, not just the names of the variables."
+  CorrectAnswer: This dataset contains measurements on 344 individual penguins, collected on three islands (Biscoe, Dream, Torgersen) in the Palmer Archipelago, Antarctica, over the years 2007, 2008, and 2009. The penguins belong to three species (Adelie, Chinstrap, Gentoo). For each penguin, physical measurements are recorded such as body mass, flipper length, bill length, bill depth, and sex.
+  AnswerTests: TRUE
+  Hint: Think about who or what is observed, how many, where, when, and what is measured.
+- Class: text
+  Output: "Here is one way to describe it: This dataset contains measurements on 344 individual penguins, collected on three islands (Biscoe, Dream, and Torgersen) in the Palmer Archipelago, Antarctica, over the years 2007, 2008, and 2009. The penguins belong to three species: Adelie, Chinstrap, and Gentoo. For each penguin, physical measurements are recorded -- body mass, flipper length, bill length, and bill depth -- as well as its sex."
+
+- Class: text
+  Output: "In this lesson you explored the actual content of the penguins dataset: what real observations look like, what data type each variable has, and which values appear in the categorical variables. This kind of exploration is always the first thing you should do with a new dataset. If you don't know what the data looks like, you can't ask meaningful questions of it -- and you won't be able to tell whether something that looks wrong later was already in the data, or introduced by your own code."
