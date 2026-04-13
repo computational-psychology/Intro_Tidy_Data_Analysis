@@ -1,0 +1,434 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Combining Data Operations
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: "In the previous lesson, we calculated the average body mass of some penguins, specifically per group and sex.
+  To do this, we ran summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE)).
+  That is TWO data operations combined: first group_by(), then summarise()."
+
+- Class: text
+  Output: "This is the core of data analysis: combining elementary data operations to get clearer, more specific answers.
+  Each individual operation -- grouping, summarising, filtering, mutating -- is simple on its own.
+  The power comes from combining them."
+
+# NESTING
+- Class: text
+  Output: "Here we used one way of combining opeations -- NESTING: putting one call inside another.
+  In summarise(group_by(penguins, species), ...), two operations are combined by nesting the group_by() operations INSIDE the summarise() call."
+
+- Class: text
+  Output: "Nesting is a perfectly valid way to combine opeations, but it can be heard to read."
+
+- Class: mult_question
+  Output: "In the expression summarise(group_by(penguins, species), avg_body_mass = mean(body_mass, na.rm = TRUE)), which operation runs first?"
+  AnswerChoices: group_by();summarise();mean();They run simultaneously
+  CorrectAnswer: group_by()
+  AnswerTests: omnitest(correctVal='group_by()')
+  Hint: R evaluates function arguments before the function itself -- so the argument to summarise() (which is group_by(...)) runs first.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "To read this, you have to start from the INSIDE and work outward
+  -- group_by runs first, then summarise.
+  Nesting works fine for two operations.
+  But with three or more it becomes hard to read -- you have to trace deeply nested parentheses,
+  and the order of operations is the reverse of reading order."
+
+- Class: mult_question
+  Output: "Consider this more deeply nested expression: filter(summarise(group_by(penguins, species), avg_mass = mean(body_mass, na.rm = TRUE)), avg_mass > 4000). Which operation runs LAST?"
+  AnswerChoices: group_by();summarise();filter();mean();They all run simultaneously
+  CorrectAnswer: filter()
+  AnswerTests: omnitest(correctVal='filter()')
+  Hint: "Start at the innermost pair of parentheses and work outward: group_by() is deepest, so it runs first -- then summarise(), then filter()."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Even with just 4 operations, nesting becomes very hard to read.
+  So, how can we combine multiple operations without nesting instead?"
+
+# INTERMEDIATE VARIABLES
+- Class: text
+  Output: "An alternative is to ASSIGN function outputs to a PROGRAM VARIABLE.
+  A program variable is just a name that refers to a value
+  -- like how 'penguins' refers to the dataframe containing penguins.
+  We assign to a (new) variable using the ASSIGNMENT OPERATOR <-: variable_name <- some_expression.
+  Note that the variable name has no quotes around it;
+  it's not a string of literal text, it's a name that refers to a value."
+
+- Class: mult_question
+  Output: "After running this code: species_summary <- summarise(group_by(penguins, species), avg_mass = mean(body_mass, na.rm = TRUE)) -- which variable contains the summarised dataframe?"
+  AnswerChoices: species_summary;penguins;avg_mass;group_by
+  CorrectAnswer: species_summary
+  AnswerTests: omnitest(correctVal='species_summary')
+  Hint: "The assignment operator <- stores the result of the right-hand side into the name on the left-hand side."
+
+- Class: mult_question
+  Output: "After running that same line, which dataframe does the variable penguins contain?"
+  AnswerChoices: The original full penguin dataset;The summarised result with one row per species;An empty dataframe -- it was overwritten;A grouped version of the data
+  CorrectAnswer: The original full penguin dataset
+  AnswerTests: omnitest(correctVal='The original full penguin dataset')
+  Hint: "The assignment creates a NEW variable called species_summary. The name penguins is never touched, so it still refers to exactly what it did before."
+
+- Class: cmd_question
+  Output: "Group the penguins dataframe by species and sex, and save it to a variable 'grouped_penguins'."
+  CorrectAnswer: grouped_penguins <- group_by(penguins, species, sex)
+  AnswerTests: any_of_exprs('grouped_penguins <- group_by(penguins, species, sex)', 'grouped_penguins <- group_by(penguins, sex, species)')
+  Hint: "Type grouped_penguins <- group_by(penguins, species, sex) and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "What should the variable grouped_penguins contain at this point?"
+  AnswerChoices: The penguins dataframe grouped by species and sex;A summary table with one row per species and sex;The original ungrouped penguins dataframe;Nothing -- the assignment printed nothing so nothing was saved
+  CorrectAnswer: The penguins dataframe grouped by species and sex
+  AnswerTests: omnitest(correctVal='The penguins dataframe grouped by species and sex')
+  Hint: "grouped_penguins <- group_by(penguins, species, sex) stores the result of group_by() -- a grouped version of the full dataframe -- under that name."
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question 
+  Output: "Assigning to a name suppresses printing -- nothing appears in the console.
+  But the result should still be there: the VALUE (the grouped dataframe) is stored under the NAME grouped_penguins.
+  Print grouped_penguins to confirm what it contains."
+  CorrectAnswer: grouped_penguins
+  AnswerTests: expr_identical_to('grouped_penguins')
+  Hint: "Just type grouped_penguins and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "So how does this help us combine operations?
+  Well, the tidyverse operations operate on dataframes, and they return dataframes.
+  So we can save the result of one operation to a variable, then use that variable as the input to the next operation."
+
+- Class: mult_question
+  Output: "Which command will compute the average body mass from the grouped dataframe you just saved?"
+  AnswerChoices: summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE));summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE));group_by(grouped_penguins, avg_body_mass);mean(grouped_penguins, body_mass, na.rm = TRUE)
+  CorrectAnswer: summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: omnitest(correctVal='summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Pass grouped_penguins -- not penguins -- as the first argument to summarise(), so it operates on the already-grouped data."
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Now run summarise(..., avg_body_mass = mean(body_mass, na.rm = TRUE)) on the grouped dataframe, to compute the grouped summary."
+  CorrectAnswer: summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Try summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Taken together, we did:
+  grouped_penguins <- group_by(penguins, species, sex);\n
+  summarise(grouped_penguins, avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: "This is equivalent to the nested version summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  -- but now the order of operations matches the order of reading, and it's easier to follow."
+
+
+- Class: cmd_question
+  Output: "Now try it yourself. Group the penguins dataframe by island and save the result to a variable of your choice."
+  CorrectAnswer: grouped <- group_by(penguins, island)
+  AnswerTests: val_equals(group_by(penguins, island))
+  Hint: "Use group_by() with penguins and island, and save the result with <-."
+
+- Class: cmd_question
+  Output: "Now use your grouped variable to compute the average body mass per island. Name the summary column avg_body_mass."
+  CorrectAnswer: summarise(grouped, avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: val_equals(summarise(group_by(penguins, island), avg_body_mass = mean(body_mass, na.rm = TRUE)))
+  Hint: "Pass your grouped variable as the first argument to summarise(), with avg_body_mass = mean(body_mass, na.rm = TRUE)."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "This is a perfectly valid way to combine operations too:
+  conduct each operation in order, assign the result to a variable, then use that variable as the input to the next operation."
+
+- Class: text
+  Output: "But it requires inventing a name (grouped_penguins) for a dataframe we probably only need once. If you do this for every intermediate step, you quickly fill up your environment with single-use variables."
+
+- Class: mult_question
+  Output: "Here is a slightly messier example of the same pattern:\n
+    df <- penguins;\n
+    df2 <- filter(df, body_mass > 3500);\n
+    df3 <- group_by(df2, island);\n
+    result <- summarise(df3, avg_bill = mean(bill_len, na.rm = TRUE));\n
+  Which variable contains ALL penguins with a body mass over 3500g, from all islands?"
+  AnswerChoices: df2;df3;result;df
+  CorrectAnswer: df2
+  AnswerTests: omnitest(correctVal='df2')
+  Hint: "df2 <- filter(df, body_mass > 3500) keeps every observation where body_mass > 3500, in the original dataframe (includes all islands).
+  The next step (df3) groups that filtered data -- it does not filter it."
+
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "This is a common pattern in programming -- you create intermediate variables to hold the results of each step, then use those variables as the input to the next step.
+  In this example we used some spectacularly not-useful varaible names (df, df2, df3) to make the point.
+  If instead we had used more descriptive names (penguins, heavy_penguins, heavy_penguins_by_island, avg_bill_by_island), it would be easier to read.
+  Readible variable names are a MUST in data analysis, to keep things clear -- for other and for yourself!"
+
+- Class: text
+  Output: "But even with good variable names, it still clutters your environment with single-use variables. Do we really need a 'heavy_penguins_by_island' variable, that we only probably only use once?
+  Wouldn't it be nicer if we could just use that dataframe directly -- without assigning it to a name -- but also without nesting it inside the next operation?"
+
+# BASIC PIPES
+- Class: text
+  Output: "The correct approach to this is the PIPE OPERATOR: |>.
+  The pipe takes the RESULT of the LEFT SIDE and passes it as the FIRST ARGUMENT to the RIGHT SIDE. So 'df |> some_function()' is exactly equivalent to 'some_function(df)'."
+
+- Class: mult_question
+  Output: "What should penguins |> nrow() produce?"
+  AnswerChoices: The number of observations (344);An error -- nrow does not take a pipe;The number of variables (8);A grouped dataframe
+  CorrectAnswer: The number of observations (344)
+  AnswerTests: omnitest(correctVal='The number of observations (344)')
+  Hint: "penguins |> nrow() is equivalent to nrow(penguins)."
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Try it: run penguins |> nrow() to confirm."
+  CorrectAnswer: penguins |> nrow()
+  AnswerTests: expr_identical_to('penguins |> nrow()')
+  Hint: "Type penguins |> nrow() and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "In a normal summarise() call you write: summarise(penguins, avg_mass = mean(body_mass, na.rm = TRUE)). When you rewrite this using the pipe as: penguins |> summarise(...), which argument from the original call is no longer needed inside the parentheses?"
+  AnswerChoices: penguins;avg_mass;mean(body_mass, na.rm = TRUE);na.rm = TRUE
+  CorrectAnswer: penguins
+  AnswerTests: omnitest(correctVal='penguins')
+  Hint: "The pipe passes its left-hand side as the FIRST argument to the function on the right. In summarise(penguins, ...), penguins is that first argument -- so the pipe replaces it."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "So, which of these is the correct pipe-based rewrite of summarise(penguins, avg_mass = mean(avg_body_mass, na.rm = TRUE))?"
+  AnswerChoices: penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE));penguins |> summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE));summarise(penguins) |> mean(avg_body_mass, na.rm = TRUE);penguins |> mean(avg_body_mass, na.rm = TRUE)
+  CorrectAnswer: penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE))
+  AnswerTests: omnitest(correctVal='penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE))')
+  Hint: "The pipe replaces the first argument (penguins), so inside summarise() you only write the summary expression -- nothing else changes."
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Use the pipe to compute the mean body mass across all penguins. Pipe penguins into summarise() and compute the mean of body_mass (with na.rm = TRUE). Call the result avg_mass."
+  CorrectAnswer: penguins |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('penguins |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Try: penguins |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE)). The pipe passes penguins as the first argument; you only need to specify the summary expression."
+
+- Class: text
+  Output: " "
+
+# CHAIN PIPES
+
+- Class: text
+  Output: "So far you practiced piping into summarise() directly.
+  The same logic applies to group_by() --
+  it takes a dataframe as its first argument and returns a dataframe,
+  so it works just as naturally with the pipe."
+
+- Class: mult_question
+  Output: "What does penguins |> group_by(species) produce?"
+  AnswerChoices: The penguins dataframe, grouped by species;A summary table with one row per species;Only the species column;An error -- group_by does not accept a pipe
+  CorrectAnswer: The penguins dataframe, grouped by species
+  AnswerTests: omnitest(correctVal='The penguins dataframe, grouped by species')
+  Hint: "group_by() takes a dataframe and returns the same dataframe with grouping information attached. The pipe passes penguins as that first argument."
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Try it: pipe penguins into group_by() to group by species."
+  CorrectAnswer: penguins |> group_by(species)
+  AnswerTests: expr_identical_to('penguins |> group_by(species)')
+  Hint: "Type penguins |> group_by(species) and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "The pipe works so neatly with tidyverse functions because of a deliberate design choice:
+  almost every tidyverse function takes a DATAFRAME as its FIRST argument, and RETURNS a dataframe as its result.
+  group_by() takes a dataframe, returns a grouped dataframe.
+  summarise() takes a dataframe, returns a summary dataframe."
+
+- Class: text
+  Output: "Because the pipe passes the left-hand result as the first argument on the right,
+  and because tidyverse functions always take a dataframe first and return a dataframe,
+  we can CHAIN them together into an analysis pipeline:
+  penguins |> group_by(species) |> summarise(...).
+  Each step receives the dataframe from the previous step, transforms it, and hands it on."
+
+
+- Class: text
+  Output: "Now let's think about how to rewrite the grouped summarise using pipes.
+  You have all the pieces -- you just need to chain them together."
+
+- Class: text
+  Output: "Our goal is to compute the average body mass per sex and species.
+  Originally we wrote: summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE)).
+  Now we want to rewrite this using pipes, without nesting."
+
+- Class: mult_question
+  Output: "What is the LAST operation we want to run in the pipeline, to get the final summary table?"
+  AnswerChoices: group_by();summarise();mean();They all run simultaneously
+  CorrectAnswer: summarise()
+  AnswerTests: omnitest(correctVal='summarise()')
+  Hint: "The last OPERATION is to summarise the grouped data -- that produces the final summary table. mean() is not an OPERATION in the pipeline -- it's just an expression inside summarise()."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "The last step is summarise(). What dataframe must summarise() receive as its first argument to produce a per-species result?"
+  AnswerChoices: The penguins dataframe grouped by species;The original ungrouped penguins dataframe;Only the species column;The avg_body_mass value
+  CorrectAnswer: The penguins dataframe grouped by species
+  AnswerTests: omnitest(correctVal='The penguins dataframe grouped by species')
+  Hint: "summarise() produces one row per group -- but only if it receives a grouped dataframe. Without grouping, it collapses everything into one row."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "So we need group_by(species) to run just before summarise(). What dataframe does group_by(species) need as its input?"
+  AnswerChoices: The full penguins dataframe;The already-summarised result;Only the species column;Nothing -- group_by creates its own data
+  CorrectAnswer: The full penguins dataframe
+  AnswerTests: omnitest(correctVal='The full penguins dataframe')
+  Hint: "group_by() takes a dataframe as its first argument and attaches grouping information to it. It needs the raw data to work from."
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: "So the order of operations is: start with the full penguins dataframe, pipe into group_by(species), then pipe into summarise() to get the average body mass per species
+  Which of these is the correct pipeline?"
+  AnswerChoices: penguins |> group_by(...) |> summarise(...);penguins |> summarise(...) |> group_by(...);group_by(penguins, ...) |> summarise(penguins, ...);group_by(species) |> summarise(grouped_penguins, ...)
+  CorrectAnswer: penguins |> group_by(...) |> summarise(...)
+  AnswerTests: omnitest(correctVal='penguins |> group_by(...) |> summarise(...)')
+  Hint: "The pipe passes the dataframe from step to step, so the order of operations is the same as the order of reading: start with penguins, then group_by(), then summarise() -- without repeating any dataframe names."
+
+- Class: cmd_question
+  Output: "Now write the pipeline. Start with penguins, pipe into group_by(species), then pipe into summarise() to get the average body mass per species. Name the summary column avg_body_mass."
+  CorrectAnswer: penguins |> group_by(species) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('penguins |> group_by(species) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Try penguins |> group_by(species) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Same result as before, but now the code reads as a sequence of steps in the right order."
+
+- Class: mult_question
+  Output: "Look at the pipeline you just wrote. How many times does the word 'penguins' appear in it?"
+  AnswerChoices: Once -- at the very start;Twice -- once for group_by and once for summarise;Three times -- once per step;Zero -- the pipe infers it
+  CorrectAnswer: Once -- at the very start
+  AnswerTests: omnitest(correctVal='Once -- at the very start')
+  Hint: "The pipe passes the dataframe from step to step automatically. Each function only describes what to do -- not where the data comes from."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Notice that with the pipe, the dataframe argument disappears from group_by() and summarise()
+  -- the pipe supplies it automatically as the first argument.
+  Each function only needs to say WHAT to do, not WHERE the data comes from."
+
+
+- Class: text_question
+  Output: "How would you describe this pipeline -- this series of operations?"
+  CorrectAnswer: "Take the penguins, group by species, then calculate average body mass per species"
+  AnswerTests: TRUE
+  Hint: "Try describing the pipeline in words, as a sequence of steps.
+  The description should match the order of operations in the code, but avoid function names."
+
+- Class: text
+  Output: "One example of a description could be 'Take the penguins, group by species, then calculate average body mass per species'.
+  The point is that the code reads like a sequence of steps, in the same order as the description,
+  and wihtout repeating the name of the dataframe at each step."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Let's practise rewriting some of the data operations from the previous lesson using pipes."
+
+- Class: cmd_question
+  Output: "Rewrite using pipes: average bill length and body mass for each species.
+  The original was: summarise(group_by(penguins, species), avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))"
+  CorrectAnswer: penguins |> group_by(species) |> summarise(avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: val_equals(summarise(group_by(penguins, species), avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE)))
+  Hint: "Try penguins |> group_by(species) |> summarise(avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "(Re)write using pipes: maximum and minimum bill depth for each island."
+  CorrectAnswer: penguins |> group_by(island) |> summarise(max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE))
+  AnswerTests: val_equals(summarise(group_by(penguins, island), max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE)))
+  Hint: "Try penguins |> group_by(island) |> summarise(max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+# ASSIGN PIPE OUTPUT
+- Class: text
+  Output: "While we don't want to save intermediate results, we do often want to save the final result of a pipeline.
+  This should work the same as with any other expression: we can assign the result of a pipeline to a variable using <-."
+  
+- Class: text
+  Output: "However, assignment works from RIGHT to LEFT: variable_name <- some_expression. 
+  So if we want to assign the result of a pipeline, the assignment operator needs to go to the LEFT of the result that we want to save.
+  In this case of a pipeline, we want to save the result of the WHOLE pipeline
+  -- meaning the assignment has to go before the whole pipeline:
+  result_name <- data |> operation_1() |> operation_2().
+  This way, the whole pipeline is treated as a single expression whose result is assigned to result_name."
+
+
+- Class: cmd_question
+  Output: "Save the average body mass by species and sex to a variable, called mass_by_species_sex"
+  CorrectAnswer: mass_by_species_sex <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: val_equals(penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE)))
+  Hint: "Try mass_by_species_sex <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Nothing printed -- the result was saved. Print mass_by_species_sex to the console to view it."
+  CorrectAnswer: mass_by_species_sex
+  AnswerTests: val_equals(mass_by_species_sex)
+  Hint: Just type mass_by_species_sex and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "In this lesson you learned how to combine data operations using nesting, intermediate variables, and pipes -- and why pipes are the clearest approach.
+  In the next lessons you will learn how to work with files on disk -- reading real data into R and writing results out -- and then how to save and organise your pipelines into reusable R scripts."
