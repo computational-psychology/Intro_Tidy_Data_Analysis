@@ -1,0 +1,113 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Filepaths and CSV
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: "So far you have only worked with the penguins dataset, which is built into R. In real analyses, data comes from files. To work with files in R, you first need to understand where R looks for them."
+
+- Class: text
+  Output: "R always has a WORKING DIRECTORY: the folder on your computer that R treats as its current location. When you refer to a file by name (like 'data.csv'), R looks for it in the working directory. When you write a file, it goes there too."
+
+- Class: cmd_question
+  Output: "Run getwd() to see your current working directory."
+  CorrectAnswer: getwd()
+  AnswerTests: expr_identical_to('getwd()')
+  Hint: Type getwd() and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "The output is a FILE PATH: a text string that describes a location in your computer's file system. A path is a sequence of directory names separated by slashes, ending in either a directory name or a file name, e.g. '/home/alice/project' or '/home/alice/project/data.csv'."
+
+- Class: text
+  Output: "There are two kinds of paths. An ABSOLUTE PATH starts from the root of the file system -- on Linux/Mac this is /, on Windows it is a drive letter like C:\\. It describes the full location, from the very top. A RELATIVE PATH describes a location relative to the current working directory. 'data.csv' means a file called data.csv in the working directory. 'data/penguins.csv' means a file inside a data/ subfolder."
+
+- Class: mult_question
+  Output: "You are working in /home/alice/project. What does the relative path 'data/results.csv' refer to?"
+  AnswerChoices: /home/alice/project/data/results.csv;/home/alice/data/results.csv;/data/results.csv;results.csv in the current directory
+  CorrectAnswer: /home/alice/project/data/results.csv
+  AnswerTests: omnitest(correctVal='/home/alice/project/data/results.csv')
+  Hint: A relative path is appended to the working directory.
+
+- Class: text
+  Output: "Relative paths are preferred in analysis scripts: they keep your code portable. If you move your project folder to a different computer (or share it with a colleague), relative paths still work -- absolute paths break."
+
+- Class: text
+  Output: "In Positron, you can see and navigate the file system in the Files pane. You can also change your working directory from within R using setwd('path/to/directory'). In practice, the cleanest approach is to keep all your analysis files (scripts and data) in one project directory, and start R with that directory as your working directory."
+
+- Class: text
+  Output: "Now let's write and read a file. The tidyverse function write_csv() saves a dataframe to a CSV (comma-separated values) file. CSV is a plain-text format that almost every data tool can read -- Excel, Python, databases, etc. The syntax is: write_csv(dataframe, 'filename.csv')"
+
+- Class: text
+  Output: "Let's first create a summary to save. We'll use the pipe to compute average body mass by species and sex."
+
+- Class: cmd_question
+  Output: "Create a summary and save it to a variable: species_sex_summary <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))"
+  CorrectAnswer: species_sex_summary <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('species_sex_summary <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Type species_sex_summary <- penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: "Now write it to a file. The file will be created in your working directory."
+
+- Class: cmd_question
+  Output: "Run write_csv(species_sex_summary, 'species_sex_summary.csv') to save the summary."
+  CorrectAnswer: write_csv(species_sex_summary, 'species_sex_summary.csv')
+  AnswerTests: expr_identical_to("write_csv(species_sex_summary, 'species_sex_summary.csv')")
+  Hint: "Type write_csv(species_sex_summary, 'species_sex_summary.csv') and hit enter."
+
+- Class: text
+  Output: "No output is printed -- write_csv works silently. The file now exists in your working directory. You can confirm this in the Files pane in Positron, or by running list.files() in the console."
+
+- Class: text
+  Output: "Now let's read it back in. The tidyverse function read_csv() reads a CSV file and returns a dataframe (technically a tibble). The syntax is: read_csv('filename.csv')"
+
+- Class: cmd_question
+  Output: "Read the file back in and save it to a variable: loaded_summary <- read_csv('species_sex_summary.csv')"
+  CorrectAnswer: loaded_summary <- read_csv('species_sex_summary.csv')
+  AnswerTests: expr_identical_to("loaded_summary <- read_csv('species_sex_summary.csv')")
+  Hint: "Type loaded_summary <- read_csv('species_sex_summary.csv') and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "read_csv() prints a message describing what it found: how many observations and variables, and what column types it guessed. It tries to detect data types automatically -- numbers become numeric, text becomes character, and so on."
+
+- Class: cmd_question
+  Output: "Run glimpse(loaded_summary) to inspect the structure of what was loaded."
+  CorrectAnswer: glimpse(loaded_summary)
+  AnswerTests: expr_identical_to('glimpse(loaded_summary)')
+  Hint: Type glimpse(loaded_summary) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "You should see the same three variables as in species_sex_summary: species (now chr, because CSV cannot store factor levels), sex (chr), and avg_body_mass (dbl). CSV is a plain-text format -- it does not store R-specific type information like factors. When you read data from a CSV, you may need to convert columns to the appropriate type afterwards."
+
+- Class: text
+  Output: "This write → read pattern is the basis of a real data analysis workflow: someone (or some process) collects data and stores it as a CSV; you read it into R; you run your pipeline; you write the results back out as a CSV to share or use elsewhere."
+
+- Class: text
+  Output: "For reading data files provided by a collaborator or downloaded from the internet, the path to the file matters. If the file is in your working directory, just the filename is enough: read_csv('data.csv'). If it is in a subfolder, include the subfolder: read_csv('data/penguins.csv'). If it is somewhere else entirely, use the absolute path: read_csv('/home/alice/downloads/data.csv') -- though this is not portable."
+
+- Class: text
+  Output: "A clean convention is to keep all data files in a data/ subfolder of your project directory, and always read from there using a relative path like read_csv('data/mydata.csv'). This keeps the project self-contained and makes the script portable."
+
+- Class: text_question
+  Output: "Suppose a colleague sends you a file called air_quality.csv and you have saved it into a folder called data/ inside your project directory. What read_csv() call would you write to load it?"
+  CorrectAnswer: read_csv('data/air_quality.csv')
+  AnswerTests: TRUE
+  Hint: "Use a relative path from the project working directory into the data/ subfolder."
+
+- Class: text
+  Output: "The answer is: read_csv('data/air_quality.csv'). This is a relative path -- it works as long as your working directory is the project folder, on any computer."
+
+- Class: text
+  Output: "In this lesson you learned what a working directory is and how to check it with getwd(). You learned the difference between absolute and relative file paths, and why relative paths are preferred. You learned how to write a dataframe to a CSV with write_csv() and read one back with read_csv(), and you saw how CSV round-trips can change column types."
