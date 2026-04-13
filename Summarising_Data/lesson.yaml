@@ -19,7 +19,7 @@
   Output: "Aggregation is an example of a DATA OPERATION: a transformation that changes the structure or representation of a dataset. Some data operations you will encounter in data analysis: AGGREGATION (collapsing many values into one), GROUPED AGGREGATION (doing so separately per group), FILTERING (keeping only observations that meet some condition), MUTATING (adding or transforming variables), and more. In this lesson we focus on aggregation."
 
 - Class: cmd_question
-  Output: "Let's start with a simple question: what is the heaviest penguin in the dataset? The tidyverse function for this is summarise(). It takes a dataframe and a SUMMARY EXPRESSION, and returns a new dataframe with one observation: the result of that summary. The function max() returns the maximum value of a variable. So we want: summarise(penguins, max(body_mass)). Try running that now.
+  Output: "Let's start with a simple question: what is the heaviest penguin in the dataset? The tidyverse function for this is summarise(). It takes a dataframe and a SUMMARY EXPRESSION, and returns a new dataframe with one observation: the result of that summary. The function max() returns the maximum value of a variable. So we want: summarise(penguins, max(body_mass)). Try running that now."
   CorrectAnswer: summarise(penguins, max(body_mass))
   AnswerTests: expr_identical_to('summarise(penguins, max(body_mass))')
   Hint: Type summarise(penguins, max(body_mass)) and hit enter.
@@ -62,7 +62,7 @@
   Output: " "
 
 - Class: text
-  OUtput: "Now the output variable is named max_body_mass -- much easier to read and work with. You can choose any name you like for the output variable -- just make sure it is a valid R variable name (no spaces, starts with a letter, etc.)."
+  Output: "Now the output variable is named max_body_mass -- much easier to read and work with. You can choose any name you like for the output variable -- just make sure it is a valid R variable name (no spaces, starts with a letter, etc.)."
 
 - Class: text
   Output: "Any function that takes a variable and returns a single value can be used inside summarise(): max(), min(), mean(), sd() (standard deviation), and many others. You will need na.rm = TRUE for all of them. Let's try a few more."
