@@ -1,0 +1,80 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Scripts
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: "Every command you have run in the console exists only in that session. Once you close R, it is gone. If you want to run the same analysis again tomorrow -- or share it with a colleague, or revisit it in six months -- you need to have it written down."
+
+- Class: text
+  Output: "Working interactively is also fragile: typos happen; accidentally overwriting a variable might require re-running many steps from memory; after a break it is hard to remember which commands to run in which order. For exploration this is acceptable, but once a pipeline is working, it should be saved."
+
+- Class: text
+  Output: "An R SCRIPT is a plain-text file containing R commands, one per line. R scripts conventionally end with .R. Any text editor can create one, but Positron's editor has useful features: syntax highlighting, tab-completion, and direct integration with the console."
+
+- Class: text
+  Output: "To create a new R script in Positron: File > New File > R Script. This opens a new tab in the editor pane. Save it immediately with a meaningful name ending in .R -- for example, penguin_analysis.R."
+
+- Class: text
+  Output: "Good names for scripts (and variables, and files) are: SHORT, DESCRIPTIVE, and UNAMBIGUOUS. Avoid spaces in filenames -- use underscores instead. For example: penguin_body_mass.R, not 'my analysis final version 3.R'."
+
+- Class: text
+  Output: "A well-structured R script has a consistent layout. Line 1 (or a few lines): a COMMENT briefly describing what this script does. Then: package loading with library(). Then: reading in data. Then: the analysis pipeline. Then (optionally): writing results out."
+
+- Class: text
+  Output: "In R, the # character starts a COMMENT. Everything from # to the end of the line is ignored when the script runs. Comments are for the human reader -- your future self or a collaborator. Use them to say WHY code does something when the code alone is not obvious. For example: # Group by species and sex to test for size differences"
+
+- Class: text
+  Output: "Here is what a complete, well-structured script might look like: # Penguin body mass analysis by species and sex -- library(tidyverse) -- penguins_raw <- read_csv('data/penguins.csv') -- # Compute average body mass per group -- body_mass_summary <- penguins_raw |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE)) -- write_csv(body_mass_summary, 'data/body_mass_summary.csv')"
+
+- Class: text
+  Output: "The workflow between the editor and the console is: write a command in the script, then send it to the console to test it. In Positron, select the line(s) you want to test in the editor and press Ctrl+Enter -- Positron pastes them into the console and runs them. This lets you test each step before committing it to the script."
+
+- Class: text
+  Output: "The iterative scripting workflow is: try a command interactively in the console; if it works, add it to the script; try the next step; repeat. Never add code to your script that you haven't confirmed works in the console first."
+
+- Class: text
+  Output: "In scripts, write each step of a pipe on its own line, with the |> at the end of each line except the last. Indent continuation lines so the structure is clear. For example: body_mass_summary <- penguins_raw |>   group_by(species, sex) |>   summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: "To run a complete script at once, use source(). For example: source('penguin_analysis.R'). R reads each line in order and executes it. If an error occurs, execution stops at that line -- everything before it will have run, nothing after."
+
+- Class: text
+  Output: "Scripts support the principles of open science: REPRODUCIBILITY (the same script on the same data gives the same result every single time), TRANSPARENCY (every step is written down -- nothing is hidden), COMMUNICABILITY (the script can be shared and read), and EXTENSIBILITY (you can build on and modify it)."
+
+- Class: text
+  Output: "Because R scripts are plain-text files, they can also be managed with version control tools like git -- allowing you to track every change, collaborate with others, and roll back mistakes. You will use this later in the course."
+
+- Class: text
+  Output: "There is one important pitfall: HIDDEN DEPENDENCIES. If you source a script in a session where you have already loaded packages or created variables, the script may silently rely on things that aren't written in it. In a new clean session next week, it will fail."
+
+- Class: text
+  Output: "To avoid hidden dependencies: always test your script in a completely clean session. Restart R first (the restart button in the console pane, or Session > Restart R in the menu), then immediately source the script without running anything else. If it runs without errors -- it is self-contained and truly reproducible."
+
+- Class: mult_question
+  Output: "You source your script in your current session (where you have already run library(tidyverse)) and it works perfectly. You restart R and try to source it again -- this time it errors with 'could not find function group_by'. What is most likely missing from your script?"
+  AnswerChoices: library(tidyverse) at the top of the script;A comment describing the script;The write_csv() call at the end;The working directory
+  CorrectAnswer: library(tidyverse) at the top of the script
+  AnswerTests: omnitest(correctVal='library(tidyverse) at the top of the script')
+  Hint: group_by() comes from the tidyverse. If a clean session cannot find it, it was never loaded in the script.
+
+- Class: text
+  Output: "Exactly. The script relied on the tidyverse being loaded in the surrounding session -- a hidden dependency. The fix is to add library(tidyverse) at the top of the script so it loads its own dependencies."
+
+- Class: text
+  Output: "Project structure matters too. Keep each analysis project in its own dedicated folder. Inside that folder: your .R scripts, and a data/ subfolder for data files. This makes the project self-contained and portable -- you can zip it up and send it to a colleague."
+
+- Class: text_question
+  Output: "Create a new R script in Positron (File > New File > R Script) and save it as penguin_analysis.R. The script should: (1) start with a comment describing what it does, (2) load the tidyverse, (3) compute average body mass by species and sex using a pipe, saving the result to body_mass_summary, (4) write the result to a CSV file called body_mass_summary.csv. Test it in a clean session by restarting R and then sourcing the script. Describe what you wrote and whether it ran successfully."
+  CorrectAnswer: The script has a header comment, library(tidyverse), a pipeline saving to body_mass_summary, and write_csv(body_mass_summary, 'body_mass_summary.csv'). It ran in a clean session.
+  AnswerTests: TRUE
+  Hint: "Work through the four steps one at a time. Test each one with Ctrl+Enter in the console before adding it to the script. Then restart R and source('penguin_analysis.R')."
+
+- Class: text
+  Output: "One example of what the script might look like: # Penguin body mass analysis by species and sex  |  library(tidyverse)  |  body_mass_summary <- penguins |>  |    group_by(species, sex) |>  |    summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))  |  write_csv(body_mass_summary, 'body_mass_summary.csv')"
+
+- Class: text
+  Output: "In this lesson you learned what R scripts are, why they matter (reproducibility, transparency, shareability), how to create and structure them in Positron, how to use the editor-console workflow with Ctrl+Enter, how to run a full script with source(), and how to test that a script is truly self-contained by running it in a clean session."
