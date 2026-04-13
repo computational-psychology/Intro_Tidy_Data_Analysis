@@ -1,0 +1,176 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Grouped Aggregation
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: In the previous lesson you used summarise() to compute summaries of the entire dataset as a whole -- for example, the average body mass of all 344 penguins. But what if we want to know the average body mass separately for each species? Or separately for male and female penguins?
+
+- Class: text
+  Output: "For those questions, we need to summarise a variable separately for each GROUP of observations -- where groups are defined by the values of another variable (like species or sex). This is called GROUPED AGGREGATION."
+
+- Class: text
+  Output: "The tidyverse function group_by() marks a dataframe as grouped. Once a dataframe is grouped, summarise() will compute its summaries separately within each group, rather than across the whole dataset."
+
+- Class: mult_question
+  Output: "group_by() takes at least two arguments. What do you think they are?"
+  AnswerChoices: A dataframe and one or more grouping variables;A variable and a summary function;A dataframe and a summary function;Two dataframes to join
+  CorrectAnswer: A dataframe and one or more grouping variables
+  AnswerTests: omnitest(correctVal='A dataframe and one or more grouping variables')
+  Hint: Think about what group_by() needs to know -- what data to group, and what to group by.
+
+- Class: text
+  Output: "Exactly: group_by(dataframe, variable_name). Let's try it."
+
+- Class: cmd_question
+  Output: Run group_by(penguins, species) and look at the output carefully.
+  CorrectAnswer: group_by(penguins, species)
+  AnswerTests: expr_identical_to('group_by(penguins, species)')
+  Hint: Type group_by(penguins, species) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "The output looks almost identical to the original penguins dataframe -- same observations, same variables, same order. But look near the top: you will see a line like '# Groups: species [3]'. That tells you this dataframe is now grouped by species, into 3 groups."
+
+- Class: text
+  Output: "Grouping does NOT split the dataframe into separate tables, add new variables, or reorder anything. It simply annotates the dataframe so that subsequent operations (like summarise()) know to work separately within each group."
+
+- Class: text
+  Output: "This also reveals a core feature of many tidyverse functions: they return a NEW DATAFRAME, rather than modifying the original. group_by() does not change the original penguins dataframe -- it returns a new copy of it that is grouped. This grouping only exists in the copy returned by group_by(). The original penguins dataframe is still ungrouped -- run penguins and you will see no Groups: line."
+
+- Class: cmd_question
+  Output: Check the original penguins dataframe to confirm it is still ungrouped.
+  CorrectAnswer: penguins
+  AnswerTests: expr_identical_to('penguins')
+  Hint: Just type penguins and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Okay, so now that you can group a dataframe, how does that help you compute summaries separately for each group? After all, we called the summarise() on the original dataframe..."
+
+- Class: text
+  Output: "The answer lies in the fact that group_by() returns a new dataframe. We can call summarise() on ANY dataframe -- including that new grouped dataframe."
+
+- Class: cmd_question
+  Output: "For now, we can NEST the two operations: put the group_by() inside the summarise() function where the dataframe goes. Run summarise(group_by(penguins, species), avg_body_mass = mean(body_mass, na.rm = TRUE))."
+  CorrectAnswer: summarise(group_by(penguins, species), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, species), avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Type summarise(group_by(penguins, species), avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: mult_question
+  Output: How many variables does the output have?
+  AnswerChoices: 2;3;344;8
+  CorrectAnswer: 2
+  AnswerTests: omnitest(correctVal='2')
+  Hint: There is one variable for the grouping variable (species) and one variable for the summary (avg_body_mass).
+
+- Class: mult_question
+  Output: How many observations does the output have?
+  AnswerChoices: 3;1;344;8
+  CorrectAnswer: 3
+  AnswerTests: omnitest(correctVal='3')
+  Hint: There is one observation in the output for each group (species) -- and there are three species.
+
+- Class: text
+  Output: "The output has two variables: species (the grouping variable) and avg_body_mass (the summary). One observation per group: Adelie, Chinstrap, and Gentoo each get their own row."
+
+- Class: text
+  Output: "And there is the magic! Summarise automatically knows the compute the summarising expression separately for each group. Instead of collapsing all 344 observations into a single number, summarise() will produce one number per group."
+
+- Class: text
+  Output: "This also already gives an answer to a meaningful data question: you can already see that the species differ in average body mass."
+
+- Class: text
+  Output: "Now try grouping by sex instead of species."
+
+- Class: cmd_question
+  Output: "Run a summarise( group_by( ... ), ... ) command to compute the average body mass for each sex."
+  CorrectAnswer: summarise(group_by(penguins, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "This is essentially the exact same command as before, just replace species with sex"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "You should see three observations: one for female, one for male, and one for NA -- the penguins whose sex was not recorded. Even the group of penguins with unknown sex gets its own summary row."
+
+- Class: text
+  Output: "group_by() can take more than one grouping variable, separated by commas. This creates one group per unique COMBINATION of values across all the grouping variables."
+
+- Class: cmd_question
+  Output: "Now group by both species and sex: summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))."
+  CorrectAnswer: summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Try summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "The output has one observation for each species-sex combination present in the data. You can see which combinations exist -- for example, which species have both male and female observations recorded, and which also have an NA sex group."
+
+
+- Class: text
+  Output: "Just as summarise() can produce multiple summary variables in one call (from the previous lesson), it can do so within a grouped summary too. Separate the summary expressions with commas."
+
+- Class: cmd_question
+  Output: "Compute both the mean and standard deviation of body_mass, grouped by species and sex. Name them avg_body_mass and sd_body_mass."
+  CorrectAnswer: summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))')
+  Hint: "Try summarise(group_by(penguins, species, sex), avg_body_mass = mean(body_mass, na.rm = TRUE), sd_body_mass = sd(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "That is the full grouped multi-aggregation data operation: group_by() to define groups, summarise() with one or more named summary expressions to compute summaries within each group. Now let's practise this data operation on some new questions."
+
+- Class: text
+  Output: "Question: does average flipper length differ between species, and between sexes within species?"
+
+- Class: cmd_question
+  Output: "Compute the average flipper length for each combination of species and sex. Name the output variable avg_flipper_len."
+  CorrectAnswer: summarise(group_by(penguins, species, sex), avg_flipper_len = mean(flipper_len, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, species, sex), avg_flipper_len = mean(flipper_len, na.rm = TRUE))')
+  Hint: "Try summarise(group_by(penguins, species, sex), avg_flipper_len = mean(flipper_len, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Next question: how do bill length and body mass compare across species? This requires two summary variables in one call."
+
+- Class: cmd_question
+  Output: "Compute the average bill length and average body mass for each species. Name the outputs avg_bill_len and avg_body_mass."
+  CorrectAnswer: summarise(group_by(penguins, species), avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, species), avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))')
+  Hint: "Try summarise(group_by(penguins, species), avg_bill_len = mean(bill_len, na.rm = TRUE), avg_body_mass = mean(body_mass, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "Last practice question: do penguins on different islands differ in bill depth? We can answer this with max and min bill depth per island."
+
+- Class: cmd_question
+  Output: "Compute the maximum and minimum bill depth for each island. Name the outputs max_bill_dep and min_bill_dep."
+  CorrectAnswer: summarise(group_by(penguins, island), max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE))
+  AnswerTests: expr_identical_to('summarise(group_by(penguins, island), max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE))')
+  Hint: "Try summarise(group_by(penguins, island), max_bill_dep = max(bill_dep, na.rm = TRUE), min_bill_dep = min(bill_dep, na.rm = TRUE))"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "In this lesson you practised the grouped aggregation data operation, to compute descriptive statistics within each group. You can group by one or more variables, and compute one or more summaries in a single call. With just this combination of data operations -- grouping then aggergating -- you can answer a wide variety of data questions. And it shows up again and again as a building block in more complex analyses. In the next lesson, you will learn how to combine these and other data operations into more structured pipelines -- a cleaner and more powerful way to express a sequence of analysis steps."
