@@ -23,6 +23,18 @@ is_ark <- function() {
   !inherits(req, "try-error")
 }
 
+# In Ark, expression output (execute_result) may be queued on a background
+# I/O thread while swirl's cat() output (stream) runs on the main thread.
+# Sleeping briefly inside an answer test gives the I/O thread time to
+# dispatch execute_result before stream output from swirl_out() arrives,
+# which increases the chance that expression output appears above feedback.
+ark_flush <- function() {
+  if (is_ark()) {
+    flush.console()
+    Sys.sleep(0.1)
+  }
+}
+
 # Get the user's expression as a string (works in both Ark and RStudio)
 get_expr_string <- function() {
   if (is_ark()) {
@@ -65,6 +77,7 @@ get_expr_parsed <- function() {
 #' SHIMMED VERSION: Uses get_expr_parsed() instead of e$expr
 expr_identical_to <- function(correct_expression){
   e <- get("e", parent.frame())
+  ark_flush()
   
   # Get user's expression using cross-platform method
   expr <- get_expr_parsed()
@@ -87,6 +100,7 @@ expr_identical_to <- function(correct_expression){
 #' SHIMMED VERSION: Uses shimmed expr_identical_to()
 any_of_exprs <- function(...){
   e <- get("e", parent.frame())
+  ark_flush()
   any(sapply(c(...), function(expr) expr_identical_to(expr)))
 }
 
@@ -95,6 +109,7 @@ any_of_exprs <- function(...){
 #' SHIMMED VERSION: Uses get_expr_parsed() instead of e$expr
 expr_uses_func <- function(func) {
   e <- get("e", parent.frame())
+  ark_flush()
   func <- str_trim(func)
   
   # Get user's expression using cross-platform method
@@ -115,6 +130,7 @@ expr_uses_func <- function(func) {
 #' SHIMMED VERSION: Uses get_expr_parsed() instead of e$expr
 expr_is_a <- function(class) {
   e <- get("e", parent.frame())
+  ark_flush()
   class <- str_trim(class)
   
   # Get user's expression using cross-platform method
