@@ -1,0 +1,20 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Writing scripts
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: Some intro text. Type any key to continue.
+
+- Class: script
+  Output: >-
+    This is the script question. This should open the script. Then, type submit() in the console when you're done.
+  AnswerTests: "TRUE"
+  Hint: Type submit() when done.
+  Script: test_script.R
+
+- Class: text
+  Output: Made it past the script question!
