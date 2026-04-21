@@ -1,0 +1,307 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Transforming Data
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+
+## SUBSETTING: FILTER & SELECT
+- Class: text
+  Output: >-
+    So far your pipelines have always used the full penguins dataset.
+    In real analyses you often need to focus on a subset of the data:
+    either just the observations you care about, or only the variables you care about.
+    The tidyverse (specifically dplyr) provides two functions for this:
+    select() for variables, and filter() for observations.
+
+
+- Class: text
+  Output: >-
+    SELECT: select() keeps only the COLUMNS you name.
+    This is useful when a dataset has many columns and you only need a few.
+    The syntax is: select(dataframe, col1, col2, ...),
+    for example: `penguins |> select(body_mass)`.
+
+- Class: cmd_question
+  Output: >-
+    Try keeping only the species, body_mass, and sex columns.
+  CorrectAnswer: penguins |> select(species, body_mass, sex)
+  AnswerTests: any_of_exprs('penguins |> select(species, body_mass, sex)', 'penguins |> select(species,body_mass,sex)')
+  Hint: "Type: penguins |> select(species, body_mass, sex)"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: "You can also drop columns by prefixing their name with -: select(-col1)."
+
+- Class: cmd_question
+  Output: >-
+    Now drop just the year column using select() with a minus sign.
+  CorrectAnswer: penguins |> select(-year)
+  AnswerTests: expr_identical_to('penguins |> select(-year)')
+  Hint: "Type: penguins |> select(-year)"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Now use select() in a script. This time, select() is used to narrow
+    the dataset to only the columns needed before grouping and summarising.
+
+- Class: script
+  Output: >-
+    The script asks: what is the average body mass per species and island?
+    Fill in the select() call to keep only the species, island, and body_mass
+    columns before the group_by() and summarise().
+    Save the file (Ctrl+S / Cmd+S), then type submit().
+  AnswerTests: "TRUE"
+  Hint: >-
+    Fill in: select(species, island, body_mass).
+    Save, then type submit().
+  Script: script_select.R
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    To filter OBSERVATIONS (rows) instead of variables (columns), we use filter() instead of select().
+    This is slightly more complicated, because we cannot just _name_ the observations we want to keep.
+    Instead, we specify some CONDITION that the observations must satisfy to be kept.
+    For example, if we want to keep only the Adelie penguins,
+    we can use the condition `species == 'Adelie'` in filter().
+
+- Class: text
+  Output: >-
+    filter() keeps only the OBSERVATIONS that satisfy a CONDITION.
+    The syntax is: filter(data_frame, condition).
+    NOTE: we filter the observations we want to KEEP, not the ones to drop.
+
+- Class: text
+  Output: >-
+    A condition, or conditional expression, is a logical statement that evaluates to TRUE or FALSE.
+    Most often, a conditional expression uses some COMPARISON OPERATOR,
+    like == (equal), != (not equal), > (greater than), < (less than), >= (at least), <= (at most).
+
+- Class: text
+  Output: >-
+    For example, `5 == 5` is TRUE, while `5 > 10` is FALSE; `x <- 5; x != 3` is TRUE, while `x < 3` is FALSE.
+
+# - Class: text
+#   Output: >-
+#     Conditions can be combined with & (AND) and | (OR), which results in a single TRUE or FALSE value.
+#     For example, `x > 0 & x < 10` is TRUE if x is between 0 and 10, while `x < 0 | x > 10` is TRUE if x is outside that range.
+
+- Class: text
+  Output: >-
+    When you use a conditional expression in filter(), it keeps only the rows where the condition is TRUE.
+    For example, `filter(penguins, species == 'Adelie')` keeps only the rows where the species column is 'Adelie'.
+
+- Class: cmd_question
+  Output: >-
+    Use filter() in a pipe to find all Adelie penguins.
+  CorrectAnswer: penguins |> filter(species == 'Adelie')
+  AnswerTests: any_of_exprs("penguins |> filter(species == 'Adelie')", 'penguins |> filter(species == "Adelie")', "penguins |> filter(species=='Adelie')", 'penguins |> filter(species=="Adelie")')
+  Hint: "Type: penguins |> filter(species == 'Adelie')"
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    Now filter for penguins whose body mass is more than 5000 grams.
+  CorrectAnswer: penguins |> filter(body_mass > 5000)
+  AnswerTests: any_of_exprs('penguins |> filter(body_mass > 5000)', 'penguins |> filter(body_mass>5000)')
+  Hint: "Type: penguins |> filter(body_mass > 5000)"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Filter can take multiple conditions, separated by commas.
+    Multiple conditions are combined with AND logic -- all of them must be true for a row to be kept.
+
+- Class: mult_question
+  Output: >-
+    Which filter() call would keep only female Gentoo penguins?
+  AnswerChoices: "filter(species = 'Gentoo' and sex = 'female');filter(species == 'Gentoo' or sex == 'female');filter(species == 'Gentoo', sex == 'female');filter(species, sex == 'Gentoo','female')"
+  CorrectAnswer: "filter(species == 'Gentoo', sex == 'female')"
+  AnswerTests: omnitest(correctVal="filter(species == 'Gentoo', sex == 'female')")
+  Hint: The full conditions are separated by a comma.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Sometimes we need a combined expression for multiple conditions on the same value,
+    for instance to keep only penguins that are within a certain body mass range.
+    In that case, we can use & (AND) and | (OR) to combine conditions into a single expression.
+    For example, `filter(penguins, body_mass > 4000 & body_mass < 5000)`
+    keeps only penguins with body mass between 4000 and 5000 grams.
+
+- Class: text
+  Output: >-
+    Now let's use filter() in a script to answer a real question.
+    The script has a skeleton pipeline -- fill in the filter() call,
+    save the file, then type submit().
+
+- Class: script
+  Output: >-
+    The script asks: do female Gentoo penguins differ in average body mass
+    across islands? The pipeline structure is already there -- fill in the
+    filter() call to keep only female Gentoo penguins.
+    Save the file (Ctrl+S / Cmd+S), then type submit().
+  AnswerTests: "TRUE"
+  Hint: >-
+    Fill in: filter(species == 'Gentoo' & sex == 'female').
+    Save, then type submit().
+  Script: script_filter.R
+
+- Class: text
+  Output: " "
+
+
+## CHANGE DATA: MUTATE
+- Class: text
+  Output: >-
+    MUTATE: mutate() adds new columns, often derived from the values already in the dataframe.
+    The syntax is:
+    mutate(dataframe, new_col = expression).
+
+- Class: text
+  Output: >-
+    The expression for the new column can be any valid R expression;
+    to add just a single value to all rows, you can use a constant like 42 or "hello":
+    `penguins |> mutate(answer = 42)` adds a new column called answer with the value 42 for all rows.
+
+- Class: text
+  Output: >-
+    More interestingly, the expression can use existing columns to compute new values.
+    For example, `penguins |> mutate(new_body_mass = body_mass - 10)`
+    adds a new column called new_body_mass with the value of body_mass minus 10 for all rows.
+
+- Class: cmd_question
+  Output: >-
+    Add a column called body_mass_kg that converts body_mass from grams to
+    kilograms (divide by 1000).
+  CorrectAnswer: penguins |> mutate(body_mass_kg = body_mass / 1000)
+  AnswerTests: any_of_exprs('penguins |> mutate(body_mass_kg = body_mass / 1000)', 'penguins |> mutate(body_mass_kg = body_mass/1000)', 'penguins |> mutate(body_mass_kg=body_mass/1000)', 'penguins |> mutate(body_mass_kg=body_mass / 1000)')
+  Hint: "Type: penguins |> mutate(body_mass_kg = body_mass / 1000)"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Now use mutate() in a script to answer a question about body mass in
+    kilograms, which is more intuitive than grams for many readers.
+
+- Class: script
+  Output: >-
+    The script asks: what is the average body mass in kilograms per species
+    and sex? Fill in the mutate() call to add a body_mass_kg column
+    (body_mass divided by 1000).
+    Save the file (Ctrl+S / Cmd+S), then type submit().
+  AnswerTests: "TRUE"
+  Hint: >-
+    Fill in: mutate(body_mass_kg = body_mass / 1000).
+    Save, then type submit().
+  Script: script_mutate.R
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    mutate() does not change the original dataset -- it returns a new
+    dataframe with the extra column. To keep the result, you assign it to a
+    variable with <-.
+
+
+## COMBINE
+- Class: text
+  Output: >-
+    These three functions -- select(), filter(), and mutate() -- combine
+    naturally with each other and with group_by() and summarise() in a pipe.
+    Each step narrows, reshapes, or enriches the data, and the result flows
+    into the next step.
+
+- Class: text
+  Output: >-
+    Here is an example that chains all three:
+    penguins |> filter(sex == 'female') |> mutate(body_mass_kg = body_mass / 1000) |> select(-body_mass).
+    This pipeline first filters the data to keep only female penguins,
+    then adds a new column with body mass in kg,
+    and finally drops the original body_mass (in grams) column.
+
+- Class: cmd_question
+  Output: >-
+    Now try it yourself. Starting from penguins, filter for Chinstrap penguins,
+    then select only species and body_mass, then add a body_mass_kg column.
+    Save the result to chinstrap_mass.
+  CorrectAnswer: chinstrap_mass <- penguins |> filter(species == 'Chinstrap') |> select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000)
+  AnswerTests: val_equals(chinstrap_mass, penguins |> filter(species == 'Chinstrap') |> select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000))
+  Hint: >-
+    Try: chinstrap_mass <- penguins |> filter(species == 'Chinstrap') |>
+    select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000)
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    You can also use filter() and select() together with group_by() and
+    summarise() in longer pipelines. The order matters: filter() first to
+    reduce rows, then group_by() and summarise() to aggregate.
+
+- Class: cmd_question
+  Output: >-
+    Compute the average body mass of female penguins, grouped by species.
+    Save the result to female_mass_by_species.
+  CorrectAnswer: female_mass_by_species <- penguins |> filter(sex == 'female') |> group_by(species) |> summarise(avg_mass = mean(body_mass, na.rm = TRUE))
+  AnswerTests: val_equals(female_mass_by_species, penguins |> filter(sex == 'female') |> group_by(species) |> summarise(avg_mass = mean(body_mass, na.rm = TRUE)))
+  Hint: >-
+    Filter for sex == 'female' first, then group_by(species), then
+    summarise(avg_mass = mean(body_mass, na.rm = TRUE)).
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Now put it all together. The next script uses filter(), mutate(), and
+    select() together with group_by() and summarise() to answer a question
+    that requires all of them.
+
+- Class: script
+  Output: >-
+    The script asks: among large penguins (body mass over 4500g), what is
+    their average bill length and body mass in kg, per species and sex?
+    Fill in the three ...-placeholders: the filter() condition, the mutate()
+    expression for body_mass_kg, and the select() call to keep only
+    species, sex, bill_len, and body_mass_kg.
+    Save the file (Ctrl+S / Cmd+S), then type submit().
+  AnswerTests: "TRUE"
+  Hint: >-
+    filter(body_mass > 4500), then mutate(body_mass_kg = body_mass / 1000),
+    then select(species, sex, bill_len, body_mass_kg).
+    Save, then type submit().
+  Script: script_combined.R
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    In this lesson you learned the three core tidyverse transformation functions:
+    select() to keep or drop columns by name,
+    filter() to keep rows matching a condition,
+    and mutate() to add new columns derived from existing ones.
+    You practiced combining them with each other
+    and with group_by() and summarise() in a single pipe.
