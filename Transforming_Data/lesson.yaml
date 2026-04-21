@@ -246,7 +246,7 @@
     then select only species and body_mass, then add a body_mass_kg column.
     Save the result to chinstrap_mass.
   CorrectAnswer: chinstrap_mass <- penguins |> filter(species == 'Chinstrap') |> select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000)
-  AnswerTests: val_equals(chinstrap_mass, penguins |> filter(species == 'Chinstrap') |> select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000))
+  AnswerTests: val_equals(penguins |> filter(species == 'Chinstrap') |> select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000))
   Hint: >-
     Try: chinstrap_mass <- penguins |> filter(species == 'Chinstrap') |>
     select(species, body_mass) |> mutate(body_mass_kg = body_mass / 1000)
@@ -265,7 +265,7 @@
     Compute the average body mass of female penguins, grouped by species.
     Save the result to female_mass_by_species.
   CorrectAnswer: female_mass_by_species <- penguins |> filter(sex == 'female') |> group_by(species) |> summarise(avg_mass = mean(body_mass, na.rm = TRUE))
-  AnswerTests: val_equals(female_mass_by_species, penguins |> filter(sex == 'female') |> group_by(species) |> summarise(avg_mass = mean(body_mass, na.rm = TRUE)))
+  AnswerTests: val_equals(penguins |> filter(sex == 'female') |> group_by(species) |> summarise(avg_mass = mean(body_mass, na.rm = TRUE)))
   Hint: >-
     Filter for sex == 'female' first, then group_by(species), then
     summarise(avg_mass = mean(body_mass, na.rm = TRUE)).
