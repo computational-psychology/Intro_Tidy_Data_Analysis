@@ -92,7 +92,7 @@
 
 - Class: cmd_question
   Output: "Read the file back in"
-  CorrectAnswer: read_csv('species_summary.csv')
+  CorrectAnswer: read_csv('gentoo_penguins.csv')
   AnswerTests: any_of_exprs("read_csv('gentoo_penguins.csv')", 'read_csv("gentoo_penguins.csv")')
   Hint: "Type: read_csv('gentoo_penguins.csv')"
 
@@ -128,6 +128,9 @@
   CorrectAnswer: loaded_penguins |> distinct(species)
   AnswerTests: expr_identical_to('loaded_penguins |> distinct(species)')
   Hint: Type loaded_penguins |> distinct(species) and hit enter.
+
+- Class: text
+  Output: " "
 
 - Class: mult_question
   Output: >-
@@ -340,7 +343,6 @@
 - Class: text
   Output: " "
 
-
 - Class: text
   Output: >-
     This probably didn't do much -- it just loaded the tidyverse package, which doesn't print anything to the console.
@@ -369,13 +371,29 @@
 - Class: text
   Output: " "
 
+
 - Class: text
   Output: >-
     If everything worked, you should see the first few rows of the data printed to the console.
     This means your script successfully read in the data from the CSV file and printed it.
     You can now add more code to your script to do further analysis on the data.
+
+- Class: text
+  Output: >-
     Try to answer the question
     "On what island do the Gentoo penguins have the longest flippers?".
+
+- Class: cmd_question
+  Output: >-
+    Edit your script to add code that calculates the mean_flipper_len for each island,
+    and then finds the island with the longest flippers, and prints the result.
+    You can use `slice_max(dataframe, variable)` to find the observation with the max value of a variable,
+    e.g., slice_max(penguins, body_mass) will give you the (single) most massive penguin.
+    When ready, run your script again with source('analysis.R') to execute it and see the answer.
+  CorrectAnswer: source('analysis.R')
+  AnswerTests: any_of_exprs("source('analysis.R')", "source(\"analysis.R\")")
+  Hint: "Run your script with source('analysis.R')"
+
 
 - Class: mult_question
   Output: >-
@@ -383,7 +401,7 @@
   AnswerChoices: Biscoe;Dream;Torgersen
   CorrectAnswer: Biscoe
   AnswerTests: omnitest(correctVal='Biscoe')
-  Hint: Use group_by() and summarise() to calculate the average flipper length for each island, and then use slice_max() to find the island with the longest flippers.
+  Hint: Use group_by() and summarise() to calculate the average flipper length for each island, and then look find the island with the longest flippers.
 
 - Class: text
   Output: >-
