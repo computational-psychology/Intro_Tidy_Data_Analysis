@@ -1,0 +1,402 @@
+- Class: meta
+  Course: Intro to Tidy Data Analysis
+  Lesson: Reading and Writing Data
+  Author: Joris Vincent
+  Type: Standard
+  Organization: Technische Universität Berlin
+  Version: 2.4.5
+
+- Class: text
+  Output: >-
+    In all these lessons you have worked with a dataset built-in to R -- the penguins data.
+    Of course, in real data science work, your data isn't already in R.
+    Sometimes you get it through some server or database connection,
+    but most often, you'll get it as a file.
+    There are many different types of datafiles, and many different types of data organizations.
+
+- Class: text
+  Output: >-
+    But one of the most common file formats is CSV: comma-separated values.
+    Essentially, this is a file format for storing dataframes, as plain text.
+    It is organized exactly as a dataframe:
+    each row of the table is one line, and the values (columns) in that row are separated by commas.
+    CSV is universally supported -- Excel, Python, databases, and almost every data tool can
+    read and write it.
+
+- Class: text
+  Output: >-
+    In this lesson, you'll learn how to read and write CSV files in R with the
+    tidyverse functions read_csv() and write_csv().
+
+- Class: text
+  Output: >-
+    Let's first create a dataframe to save.
+    Maybe, your supervisor isn't interested in all the penguins,
+    but just the Gentoo species.
+
+- Class: cmd_question
+  Output: Create version of the penguins data with only the Gentoo species.
+  CorrectAnswer: penguins |> filter(species == 'Gentoo')
+  AnswerTests: any_of_exprs("penguins |> filter(species == 'Gentoo')", 'penguins |> filter(species == "Gentoo")')
+  Hint: Use filter() to keep only rows where the species is 'Gentoo'.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    We probably also want to assign it to a program variable to work with it...
+    Recreate this dataframe, and assign it to a variable called gentoo_penguins this time.
+  CorrectAnswer: gentoo_penguins <- penguins |> filter(species == 'Gentoo')
+  AnswerTests: any_of_exprs("gentoo_penguins <- penguins |> filter(species == 'Gentoo')", 'gentoo_penguins <- penguins |> filter(species == "Gentoo")')
+  Hint: Use the same filter() call as before, but assign it to gentoo_penguins with <-.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Now that we have a dataframe, let's save it to a file!
+    The tidyverse function write_csv() saves a dataframe to a CSV file.
+    Its syntax is: write_csv(dataframe, filename).
+    The first argument is the dataframe to save.
+    The second argument is the filename where the file should be written to,
+    as a string, e.g., 'my_penguins.csv'.
+
+- Class: cmd_question
+  Output: >-
+    Save your gentoo_penguins dataframe to a file called 'gentoo_penguins.csv'.
+  CorrectAnswer: write_csv(gentoo_penguins, 'gentoo_penguins.csv')
+  AnswerTests: any_of_exprs("write_csv(gentoo_penguins, 'gentoo_penguins.csv')", 'write_csv(gentoo_penguins, "gentoo_penguins.csv")')
+  Hint: "Type: write_csv(gentoo_penguins, 'gentoo_penguins.csv')" 
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    write_csv() does not print any output -- it works silently.
+    After the command finishes, the file exists on disk
+    in your working directory.
+    You can confirm this by running list.files() in the console
+    (or sometimes looking in the File explorer pane in your IDE).
+
+- Class: text
+  Output: >-
+    Now let's read it back in.
+    The tidyverse function read_csv() reads a CSV file and returns a dataframe. 
+    Its syntax is:
+    read_csv(filename).
+    When it runs, read_csv() prints a message describing what it found --
+    how many columns, and what type it guessed for each one.
+
+- Class: cmd_question
+  Output: "Read the file back in"
+  CorrectAnswer: read_csv('species_summary.csv')
+  AnswerTests: any_of_exprs("read_csv('gentoo_penguins.csv')", 'read_csv("gentoo_penguins.csv")')
+  Hint: "Type: read_csv('gentoo_penguins.csv')"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    The result of read_csv() is a dataframe, which gets printed to the console immediately.
+    But if you want to work with it, you need to assign it to a variable.
+    Let's assign it to a variable called loaded_penguins.
+
+- Class: cmd_question
+  Output: "Assign the read_csv() result to loaded_penguins"
+  CorrectAnswer: loaded_penguins <- read_csv('gentoo_penguins.csv')
+  AnswerTests: any_of_exprs("loaded_penguins <- read_csv('gentoo_penguins.csv')", 'loaded_penguins <- read_csv("gentoo_penguins.csv")')
+  Hint: "Type: loaded_penguins <- read_csv('gentoo_penguins.csv')"
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Run glimpse(loaded_penguins) to inspect the structure of what was loaded."
+  CorrectAnswer: glimpse(loaded_penguins)
+  AnswerTests: expr_identical_to('glimpse(loaded_penguins)')
+  Hint: Type glimpse(loaded_penguins) and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: "Check that it really is just the Gentoo penguins, by running distinct() on the species column."
+  CorrectAnswer: loaded_penguins |> distinct(species)
+  AnswerTests: expr_identical_to('loaded_penguins |> distinct(species)')
+  Hint: Type loaded_penguins |> distinct(species) and hit enter.
+
+- Class: mult_question
+  Output: >-
+    You write a dataframe to CSV and read it back. One column was a factor
+    in the original; what type does read_csv() give it when you read it back?
+  AnswerChoices: character;factor;integer;logical
+  CorrectAnswer: character
+  AnswerTests: omnitest(correctVal='character')
+  Hint: CSV files are plain text and cannot store R factor levels.
+
+- Class: text
+  Output: " "
+
+
+- Class: text
+  Output: >-
+    The answer is character. When you write a dataframe to CSV, the factor column
+    gets written as plain text. When you read it back in, read_csv() guesses that
+    it should be a character column. So factors don't survive the round-trip through CSV.
+
+- Class: text
+  Output: >-
+    Now you know how to read and write CSV files with read_csv() and write_csv()!
+    But.. where exactly do these files get written to and read from?
+    They live somewhere on your computer, but where exactly?
+    
+
+### PATHS AND WORKING DIRECTORY
+- Class: text
+  Output: >-
+    When you write a file with write_csv(), you give it a filename, e.g., 'my_penguins.csv'.
+    This is actually a FILEPATH -- a string that describes where the file lives on your computer.
+    Kind of like a full adress for the file.
+
+- Class: text
+  Output: >-
+    A filepath (both in R and outside of R) consists of two parts:
+    1. The directory path, which describes the folder where the file lives.
+    2. The filename, which is the name of the file itself.
+    For example, in the filepath 'data/my_penguins.csv', 'data/' is the directory path, and 'my_penguins.csv' is the filename.
+
+- Class: text
+  Output: >-
+    The path can be an ABSOLUTE path, which starts from the root of your filesystem, e.g., 'C:/Users/joris/my_penguins.csv'.
+    Absolute paths are... well... absolute. They refer to that exact same file, always.
+    However, that also makes them specific to your exact computer
+    -- they won't work on anyone else's computer,
+    especially not if they contain a User directory with your name in it, like this example.
+    This makes them not PORTABLE -- they won't work if you share your code with someone else, or if you move it to another computer.
+
+- Class: text
+  Output: >-
+    Instead, we often prefer to use RELATIVE paths,
+    which are less of an address, and more of a "directions" to the file.
+    For example, 'data/my_penguins.csv' is a relative path that says "to find this file,
+    first go to the data/ subfolder,then look for my_penguins.csv there".
+    Or even just the filename 'my_penguins.csv' is a relative path;
+    one that says "look for this file in the current folder".
+
+- Class: text
+  Output: >-
+    Relative to what? What is the current folder?
+    In R, this is called the WORKING DIRECTORY:
+    the folder that R is currently working "in".
+
+- Class: cmd_question
+  Output: "Check your current working directory with getwd() (no arguments)."
+  CorrectAnswer: getwd()
+  AnswerTests: expr_identical_to('getwd()')
+  Hint: Type getwd() and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    This is your current working directory. Any relative paths you specify,
+    are relative to this.
+
+- Class: mult_question
+  Output: >-
+    The file you created using write_csv('gentoo_penguins') -- where is it?
+  AnswerChoices: in my Documents directory;in a 'data' subdirectory;in the current directory
+  CorrectAnswer: in the current directory
+  AnswerTests: omnitest(correctVal='in the current directory')
+  Hint: Just a filename is a relative path to the current working directory.
+
+- Class: text
+  Output: " "
+
+
+
+### PATHS AND SCRIPTS
+- Class: text
+  Output: >-
+    Generally, it is good practice to keep all the files for one project
+    together in one directory
+    -- the data, the scripts, and any output (e.g., figures, summaries) that you create.
+    Each project then 'lives' in its own project folder, separated from other projects.
+    This makes it easier to keep track of your files, and to share your project with others:
+    you just have to share that one project folder, and it contains everything needed to run the project.
+
+- Class: text
+  Output: >-
+    Relative paths make this super easy and practical.
+    A widely used convention is to keep all data files in a data/ subfolder
+    inside your project directory.
+    Then every read_csv() call in your scripts
+    uses a relative path like read_csv('data/mydata.csv').
+
+- Class: text
+  Output: >-
+    Let's now practie this, and write a complete script to analyse your Gentoo penguins data.
+
+- Class: cmd_question
+  Output: >-
+    First, create a 'gentoo_penguins' project directory, in your current working directory.
+    Use dir.create() to do this, with the name of the new directory as the argument.
+  CorrectAnswer: dir.create('gentoo_penguins')
+  AnswerTests: expr_identical_to('dir.create("gentoo_penguins")')
+  Hint: Type dir.create('gentoo_penguins') and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    Now, we need to make that project directory our working directory, so that we can work inside it.
+    Use setwd() to change your working directory to the new 'gentoo_penguins' directory.
+  CorrectAnswer: setwd('gentoo_penguins')
+  AnswerTests: expr_identical_to('setwd("gentoo_penguins")')
+  Hint: Type setwd('gentoo_penguins') and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    Use getwd() to confirm that your working directory is now the 'gentoo_penguins' directory.
+  CorrectAnswer: getwd()
+  AnswerTests: expr_identical_to('getwd()')
+  Hint: Type getwd() and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    Create a 'data' subdirectory, in your current working directory.
+    Use dir.create() to do this, with the name of the new directory as the argument.
+  CorrectAnswer: dir.create('data')
+  AnswerTests: expr_identical_to('dir.create("data")')
+  Hint: Type dir.create('data') and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: cmd_question
+  Output: >-
+    Save your gentoo_penguins dataframe to a file called 'gentoo_penguins.csv' in the data/ subdirectory.
+    Use write_csv() to do this, with the dataframe and the filename (including the subdirectory) as arguments.
+  CorrectAnswer: write_csv(gentoo_penguins, 'data/gentoo_penguins.csv')
+  AnswerTests: any_of_exprs("write_csv(gentoo_penguins, 'data/gentoo_penguins.csv')", 'write_csv(gentoo_penguins, "data/gentoo_penguins.csv")')
+  Hint: Type write_csv(gentoo_penguins, 'data/gentoo_penguins.csv') and hit enter.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Now you have a complete project directory, with a data/ subfolder containing your data file.
+    We will now write a script to read in that data and do some analysis on it.
+
+- Class: text
+  Output: >-
+    In R, you can write scripts in plain text files with the .R extension.
+    You can create a new script file in your project directory, e.g., 'analysis.R',
+    and write your R code there.
+
+- Class: text
+  Output: >-
+    Use your IDE to create a new script file called 'analysis.R' in your current working directory.
+    Go to File -> New File -> R Script.
+    This should open the script editor to a blank script.
+    Write a header comment, and save your script as 'analysis.R' in your current working directory.
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    To run a script, you can use the source() function, with the filename of the script as the argument.
+    For example, source('analysis.R') will run the 'analysis.R' script.
+
+- Class: text
+  Output: >-
+    The first thing we want to do in our script,
+    is load in any packages we need for our analysis, using library().
+    Since we will be using read_csv() to read in our data, we need to load the tidyverse package.
+    So the first line of your script should be library(tidyverse).
+
+- Class: cmd_question
+  Output: >-
+    In your 'analysis.R' script, add a line of code to load the tidyverse package with library(tidyverse).
+    Then, save the script and run it with source('analysis.R') to execute your script.
+  CorrectAnswer: source('analysis.R')
+  AnswerTests: any_of_exprs("source('analysis.R')", "source(\"analysis.R\")")
+  Hint: "Type: source('analysis.R')"
+
+- Class: text
+  Output: " "
+
+
+- Class: text
+  Output: >-
+    This probably didn't do much -- it just loaded the tidyverse package, which doesn't print anything to the console.
+    Moreover, you already have the tidyverse loaded in your current R session, so it didn't change anything.
+    But now you have a script that loads the tidyverse -- this is good practice, because
+    if you share your script with someone else, or run it in a new R session,
+    it will load the tidyverse for you, so you don't have to remember to do it yourself.
+
+- Class: text
+  Output: >-
+    Next, we want to read in our data from the CSV file we created.
+    We will use read_csv() to do this, with the filename of the CSV file as
+
+- Class: cmd_question
+  Output: >-
+    In your 'analysis.R' script, write a line of code
+    to read in the 'data/gentoo_penguins.csv' file.
+    Use read_csv() to do this. Assign it to a variable called 'penguins_data'.
+    Then, print the first few rows of the data with print() and slice_head().
+    Once you're done, save the script
+    and run it with source('analysis.R') to execute your script.
+  CorrectAnswer: source('analysis.R')
+  AnswerTests: any_of_exprs("source('analysis.R')", "source(\"analysis.R\")")
+  Hint: "Type: source('analysis.R')"
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    If everything worked, you should see the first few rows of the data printed to the console.
+    This means your script successfully read in the data from the CSV file and printed it.
+    You can now add more code to your script to do further analysis on the data.
+    Try to answer the question
+    "On what island do the Gentoo penguins have the longest flippers?".
+
+- Class: mult_question
+  Output: >-
+    Which island has the longest flippers for Gentoo penguins?
+  AnswerChoices: Biscoe;Dream;Torgersen
+  CorrectAnswer: Biscoe
+  AnswerTests: omnitest(correctVal='Biscoe')
+  Hint: Use group_by() and summarise() to calculate the average flipper length for each island, and then use slice_max() to find the island with the longest flippers.
+
+- Class: text
+  Output: >-
+    In this lesson you learned how to save a dataframe to a CSV file with
+    write_csv() and read one back with read_csv(). You saw how read_csv()
+    guesses column types and that factors become character strings in the
+    round-trip. You learned the data/ subfolder convention for keeping
+    projects portable and self-contained.
+
+- Class: text
+  Output: >-
+    Now, you have all the tools to do your own data analysis projects with your own data!
+    You know how to organize a data science project with a project directory
+    and a data/ subfolder,
+    how to create scripts,
+    and how to read and write data files with read_csv() and write_csv().
