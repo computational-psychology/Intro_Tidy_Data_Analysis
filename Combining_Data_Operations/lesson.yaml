@@ -397,6 +397,24 @@
 - Class: text
   Output: " "
 
+- Class: text
+  Output: >-
+    Inside summarise() you can use any function that reduces a group to a single value.
+    One useful built-in is n(), which simply counts the number of rows in each group.
+    For example, penguins |> group_by(species) |> summarise(count = n())
+    gives you the number of penguins per species.
+    n() takes no arguments -- it always counts the rows of the current group.
+
+- Class: cmd_question
+  Output: >-
+    Count the number of penguins per island.
+  CorrectAnswer: penguins |> group_by(island) |> summarise(count = n())
+  AnswerTests: val_equals(penguins |> group_by(island) |> summarise(count = n()))
+  Hint: "Try: penguins |> group_by(island) |> summarise(count = n())"
+
+- Class: text
+  Output: " "
+
 # ASSIGN PIPE OUTPUT
 - Class: text
   Output: "While we don't want to save intermediate results, we do often want to save the final result of a pipeline.
