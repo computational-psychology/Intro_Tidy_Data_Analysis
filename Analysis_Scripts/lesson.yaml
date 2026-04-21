@@ -1,20 +1,360 @@
 - Class: meta
   Course: Intro to Tidy Data Analysis
-  Lesson: Writing scripts
+  Lesson: Analysis Scripts
   Author: Joris Vincent
   Type: Standard
   Organization: Technische Universität Berlin
   Version: 2.4.5
 
+
+# ============================================================
+# PART 1: THE LIMITS OF THE REPL
+# ============================================================
+
 - Class: text
-  Output: Some intro text. Type any key to continue.
+  Output: >-
+    In the previous lessons you did all your work interactively in the console --
+    you typed a command, pressed enter, saw the result, then typed another command.
+    This is called working in the REPL (Read-Eval-Print Loop).
+
+- Class: text
+  Output: >-
+    The REPL is great for exploration: you can quickly try things out, see results
+    immediately, and course-correct. But it has some real limitations -- once you
+    close R, everything you typed is gone.
+
+- Class: mult_question
+  Output: >-
+    You run a careful pipeline in the console that produces a result you are happy
+    with. You close R without saving anything. When you reopen R the next day to
+    show your supervisor, what happens?
+  AnswerChoices: You have to retype everything from memory or your own notes;The R console saves all previous commands automatically;The result is still in the environment;Nothing -- R saves all variables to disk by default
+  CorrectAnswer: You have to retype everything from memory or your own notes
+  AnswerTests: omnitest(correctVal='You have to retype everything from memory or your own notes')
+  Hint: "The REPL does not persist commands or results between sessions unless you explicitly save them."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Even within a single session, the REPL hides something important: the ORDER
+    and INTENTION of your steps. You end up with a result in your environment --
+    but not a clear record of how you got there. Which commands did you run? In
+    which order? Did you filter before or after grouping? You would have to scroll
+    back through the console history -- if it is even still there.
+
+- Class: text
+  Output: >-
+    This problem gets bigger as your analysis grows. A single short pipeline is
+    easy enough to retype. But a real analysis often involves several pipelines
+    in sequence -- filtering the data, then grouping it, then summarising, then
+    perhaps computing something else from the summary. Rebuilding all of that
+    from scratch every session is tedious and error-prone.
+
+- Class: mult_question
+  Output: >-
+    A colleague wants to reproduce your analysis exactly on a slightly different
+    dataset. What do they need?
+  AnswerChoices: The exact commands you ran, in order;Just the final result variable;The R version you used;The raw data only
+  CorrectAnswer: The exact commands you ran, in order
+  AnswerTests: omnitest(correctVal='The exact commands you ran, in order')
+  Hint: "Reproducing an analysis means running the same steps on the data. For that you need the exact commands that produced the result."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    This is the core problem with doing analysis exclusively in the REPL: it is
+    hard to save, repeat, or share (even with you in the future).
+
+
+# ============================================================
+# PART 2: WHAT IS A SCRIPT?
+# ============================================================
+
+- Class: text
+  Output: >-
+    The solution is to write an ANALYSIS SCRIPT:
+    simply a file that contains all the commands of your analysis in a structured format.
+    Instead of typing commands one by one into the console,
+    you write them into a file -- one line per command, in the order they should run.
+    The file is saved to disk, so it persists between sessions.
+
+- Class: text
+  Output: >-
+    An R script file is a plain-text file, with a filename ending in .R (e.g., my_analysis.R).
+    You could write it with any text editor you want.
+    Though, IDEs such as Positron or RStudio include an editor panel designed for writing R scripts,
+    with features like syntax highlighting, code completion, and easy execution of lines or blocks of code.
 
 - Class: script
   Output: >-
-    This is the script question. This should open the script. Then, type submit() in the console when you're done.
+    A script file has been opened in the editor panel. Take a look at it --
+    notice the HEADER comment block at the top (title, author, date, description),
+    and the example pipeline below it. This is the basic structure every analysis
+    script starts with.
+    When you are done reading, switch back to this console and type submit().
   AnswerTests: "TRUE"
-  Hint: Type submit() when done.
-  Script: test_script.R
+  Hint: "Type submit() here to continue."
+  Script: script_01_single_line.R
 
 - Class: text
-  Output: Made it past the script question!
+  Output: " "
+
+- Class: text
+  Output: >-
+    As you can see, this script does not do much of anything interesting;
+    it just computes the number of rows in the penguins dataset.
+    But it is a complete script: it contains R code that can be run from start to finish.
+
+- Class: text
+  Output: >-
+    For the rest of this lesson, some questions will open a script for you to either read or edit.
+    When you only need to read (like just now), type submit() when done.
+    It will say "Sourcing your script ..."
+    -- meaning it is running the script in the background to check your work --
+    and then it will return you to this console to continue the lesson.
+
+
+# ============================================================
+# PART 3: SCRIPTS DON'T PRINT AUTOMATICALLY
+# ============================================================
+
+- Class: text
+  Output: >-
+    Wait, if it ran the script, why didn't we see any output?
+    The script contains a line that computes nrow(penguins)
+    -- the number of rows in the dataset -- but when we ran it, nothing appeared.
+
+- Class: text
+  Output: >-
+    One important difference between running code in the console versus in a script,
+    is that in the console, typing nrow(penguins) immediately prints the result.
+    In a script, the same line runs silently
+    -- the value is computed, but nothing appears unless you explicitly ask for it.
+
+- Class: text
+  Output: >-
+    Instead, we explicitly tell R to print something to the console, using the print() function.
+    In the console you rarely need this function -- the REPL prints for you automatically.
+    In a script, print() is how you make a result visible when you run it.
+
+- Class: cmd_question
+  Output: >-
+    Try it in the console first: add print() to penguins |> nrow().
+  CorrectAnswer: nrow(penguins)
+  AnswerTests: TRUE
+  Hint: "Type penguins |> nrow() |> print() and hit enter."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Same result as typing nrow(penguins) directly -- but now the print() call is explicit.
+    In a script, that explicitness is what makes the output appear.
+    Now let's see this in action: the script has a bare nrow(penguins) line.
+    When sourced as-is, it produces no output.
+    Instead, we'll edit the script to pipe that line into a print() call.
+
+- Class: text
+  Output: >-
+    For the next question, you will edit the script to make the number of rows appear when it runs.
+    After you have edited the script, you'll need to save it before submitting.
+    Before saving, the file name in the editor panel will have a dot (*) next to it, indicating unsaved changes.
+    Save the file by either clicking the save icon in the editor panel,
+    or by using the keyboard shortcut (Ctrl+S on Windows/Linux, Cmd+S on Mac).
+    The dot should disappear, indicating the file is now saved.
+    Then you can type submit() here to run the script and check your work.
+    For any future script-editing questions,
+    the same process applies: edit the script, save it, then submit() to check.    
+
+- Class: script
+  Output: >-
+    The script contains a bare nrow(penguins) call.
+    Change it so that  the number of rows is displayed when the script runs.
+    Save the file (Ctrl+S / Cmd+S), then type submit() here in the console.
+  AnswerTests: "TRUE"
+  Hint: "Change nrow(penguins) to nrow(penguins) |> print(), save, then type submit()."
+  Script: script_01b_print.R
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    That's the very basics of a script: R code in a file,
+    which runs line-by-line when you source it.
+    By default, scripts do not print anything unless you explicitly ask them to.
+
+
+# ============================================================
+# PART 4: COMMENTS
+# ============================================================
+
+- Class: text
+  Output: >-
+    Let's look at a more realistic script.
+
+- Class: script
+  Output: >-
+    Notice this script has some lines prefixed with #.
+    These are COMMENTS: lines of text that R completely ignores when running the script.
+    (Type submit() to run this script, and continue)
+  AnswerTests: "TRUE"
+  Hint: "Type submit() to run the script and continue."
+  Script: script_02_comments.R  
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Comments are for human readers, not for R.
+    They are a crucial part of any script, because they can explain
+    the intent and structure of the code to anyone who reads it --
+    including your future self.
+
+- Class: text
+  Output: >-
+    (Good) Comments serve two roles in a script.
+    First, STRUCTURE: banner lines like '# --- Section title ---' divide the
+    script into readable sections.
+    Second, EXPLANATION: clarifying WHY a step is done,
+    or what a non-obvious line means.
+
+- Class: text
+  Output: >-
+    A good comment explains INTENT, not mechanics.
+    Consider this line: mean(body_mass, na.rm = TRUE).
+    A bad comment above it would be '# Remove NAs' or '# Compute mean' --
+    that just repeats what the code already says.
+    A better comment is '# na.rm = TRUE: ignore penguins with missing body mass
+    rather than returning NA' -- that tells you WHY the argument is there.
+
+- Class: mult_question
+  Output: "Which comment adds the most value to the line: filter(penguins, !is.na(sex))?"
+  AnswerChoices: "# Remove penguins with unknown sex, to avoid NA groups in the summary;# Filter the data;# This is a filter step;# Using filter()"
+  CorrectAnswer: "# Remove penguins with unknown sex, to avoid NA groups in the summary"
+  AnswerTests: omnitest(correctVal='# Remove penguins with unknown sex, to avoid NA groups in the summary')
+  Hint: "A useful comment explains WHY -- the intent and consequence -- not just WHAT the code mechanically does."
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    Section header comments are also very useful for dividing a longer script into
+    readable blocks. A common pattern is a 'banner' line like
+    '# --- Question: body mass by species ---', then the code for that question,
+    then '# --- Question: bill dimensions by island ---', and so on.
+    This makes the overall structure of the script clear at a glance.
+
+# ============================================================
+# PART 5: Writing the header
+# ============================================================
+
+- Class: text
+  Output: "Let's build up an analysis script together.
+  We will work with the penguins dataset and answer two data questions from the previous lessons."
+
+- Class: text
+  Output: "The first thing to add to a script is a HEADER:
+    a comment block at the top that says what the script is, who wrote it, and when.
+    This takes about 30 seconds to write and is invaluable when you find the file six months later."
+
+- Class: script
+  Output: >-
+    A script has been opened for you. Fill in your name in the header, so it looks something like:
+      # Author:  Ada Lovelace
+    Save the file (Ctrl+S / Cmd+S), then type submit() in the console.
+  AnswerTests: "TRUE"
+  Hint: "Fill in the Author line in the header comment, save, then type submit()."
+  Script: script_02_comments.R
+
+- Class: text
+  Output: "The header comment is now the first thing anyone (including future-you)
+  will see when they open this file.
+  Good habit established."
+
+
+# ============================================================
+# PART 6: First analysis question
+# ============================================================
+
+- Class: text
+  Output: "Now let's answer a  first data question.
+  In a previous lesson you computed the average body mass per species and sex using a pipeline:
+  penguins |> group_by(species, sex) |> summarise(avg_body_mass = mean(body_mass, na.rm = TRUE))
+  We will add this to the script."
+
+- Class: script
+  Output: >-
+    This script contains a header plus a section comment for this Data Question.
+    Read through it -- notice:
+    the section header comment (# --- Question ... ---)
+    and the start of the pipeline, eventually saving the result to mass_by_species_sex.
+    Write the (rest of the) pipeline to compute average body mass by species and sex,
+    on the lines below the section comment. 
+    When you are happy with it, save the file, then submit() to check your work.
+  AnswerTests: "TRUE"
+  Hint: "Edit the script, then type submit() in the console."
+  Script: script_02_first_q.R
+
+- Class: text
+  Output: " "
+
+- Class: text
+  Output: >-
+    That's your first analysis script!
+    It has a header, a section comment, and a pipeline that answers a data question.
+
+- Class: text
+  Output: >-
+    Now imagine we want to add a second analysis question:
+    what is the range (minimum and maximum) of bill length per island?
+    You already wrote this pipeline in the previous lesson:
+    penguins |> group_by(island) |> summarise(min_bill_len = min(bill_len, na.rm = TRUE), max_bill_len = max(bill_len, na.rm = TRUE))
+
+- Class: text
+  Output: >-
+    When adding a new question to a script, follow this pattern:
+    start with a section comment (# --- Question: description ---),
+    optionally add a brief comment explaining any non-obvious choices,
+    then write the pipeline and assign the result to a descriptively named variable.
+
+- Class: script
+  Output: >-
+    This script has some form of the header and pipeline for the prvious question.
+    Add this new data question (min and max bill length per island),
+    with a section comment and variable name.
+    When you are done, type submit() in the console.
+  AnswerTests: "TRUE"
+  Hint: "Add the pipeline: bill_len_by_island <- penguins |> group_by(island) |> summarise(min_bill_len = min(bill_len, na.rm = TRUE), max_bill_len = max(bill_len, na.rm = TRUE)). Then type submit()."
+  Script: script_03_second_q.R
+
+
+# ============================================================
+# PART 8: Wrap-up
+# ============================================================
+
+- Class: text
+  Output: >-
+    You have written a modest but complete analysis script: a header, two clearly
+    separated analysis questions, meaningful variable names, and explanatory
+    comments. That is the template for any analysis script, no matter how large.
+
+- Class: text
+  Output: >-
+    To summarise good script practices: start with a header comment (title,
+    author, date, description); use section comments to separate logical blocks;
+    write comments that explain WHY, not just what; and use descriptive variable
+    names for saved results.
+
+- Class: text
+  Output: >-
+    In future lessons you will learn how to run a full script at once, how to
+    organise multiple scripts in a project, and how to read data from files --
+    completing the picture of a reproducible analysis workflow.
