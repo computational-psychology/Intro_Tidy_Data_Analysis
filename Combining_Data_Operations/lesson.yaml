@@ -226,9 +226,9 @@
   Output: " "
 
 - Class: mult_question
-  Output: "So, which of these is the correct pipe-based rewrite of summarise(penguins, avg_mass = mean(avg_body_mass, na.rm = TRUE))?"
-  AnswerChoices: penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE));penguins |> summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE));summarise(penguins) |> mean(avg_body_mass, na.rm = TRUE);penguins |> mean(avg_body_mass, na.rm = TRUE)
-  CorrectAnswer: penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE))
+  Output: "So, which of these is the correct pipe-based rewrite of summarise(penguins, avg_mass = mean(body_mass, na.rm = TRUE))?"
+  AnswerChoices: penguins |> summarise(avg_mass = mean(body_mass, na.rm = TRUE));penguins |> summarise(penguins, avg_body_mass = mean(body_mass, na.rm = TRUE));summarise(penguins) |> mean(avg_body_mass, na.rm = TRUE);penguins |> mean(avg_body_mass, na.rm = TRUE)
+  CorrectAnswer: penguins |> summarise(avg_mass = mean(body_mass, na.rm = TRUE))
   AnswerTests: omnitest(correctVal='penguins |> summarise(avg_mass = mean(avg_body_mass, na.rm = TRUE))')
   Hint: "The pipe replaces the first argument (penguins), so inside summarise() you only write the summary expression -- nothing else changes."
 
